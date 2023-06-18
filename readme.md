@@ -38,7 +38,7 @@ Note that this methodology generates all of the main dependencies in the both th
 but that also ensures that if I only update the `dev` section, then I can verify that the
 dependencies stay in sync on both lock files.
 
-## Requirements
+## Requirements for Usage
 
 Baka only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
 tested with other shells. It also expects the following programs are available:
@@ -55,7 +55,19 @@ tested with other shells. It also expects the following programs are available:
 - rm
 - touch
 
-# Disclaimer
+In addition, your Python project must specify its dependencies in a `pyproject.toml` file, rather
+than `requirements.txt`, according to [PEP 621][pep-621]. Namely:
+
+- Specify your main dependencies in the `dependencies` list under the `[project]` section using
+  [PEP 508][pep-508]-style strings.
+- Place the extra development dependencies (like linters, the test suite, etc) in a list called
+  `dev` in the `[project.optional-dependencies]` secion, also using [PEP 508][pep-508]-style
+  strings.
+
+[pep-621]: https://peps.python.org/pep-0621/
+[pep-508]: https://peps.python.org/pep-0508/
+
+## Disclaimer
 
 **This is in no way a sales pitch**, only sharing my insanity. I'm resistant to [Poetry][poetry]
 (some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
@@ -68,7 +80,7 @@ Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pypr
 
 [blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
 
-# Outstanding Issues
+## Outstanding Issues
 
 There are a few outstanding issues with this methodology:
 
