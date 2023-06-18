@@ -1,8 +1,8 @@
 # Baka
 
-On Linux or Unix/Mac systems, I like to use Makefiles to manage my Python projects these days (on
-Linux and Mac at least). I've workshopped these Makefiles into an informal standard that I'm now
-calling Baka. Baka will:
+On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and `pip-tools` to manage
+my Python projects these days (on Linux and Mac at least). I've workshopped this process into an
+informal standard that I'm now calling Baka. Baka will:
 
 - Bootstrap a virtual environment using the `venv` module with the latest versions of `pip`,
   `wheel`, and `pip-tools`.
@@ -30,12 +30,13 @@ New developers can bootstrap their environments with ease using `make bootstrap`
 target).
 
 Add the dependencies you want in `pyproject.toml`, and pin the versions using `pip-tools` in a
-`requirements.txt`-style "lock file". Using Baka, devs can generate new lockfiles and update their
-local env using `make update`.
+`requirements.txt`-style lock file. `pip-tools` creates a temporary virtual environment whenever a
+new lockfile is created, so you don't have to worry about poisoning your venv. Using Baka, devs can
+generate new lockfiles and update their local env using `make update`.
 
 Note that this methodology generates all of the main dependencies in the both the `main` and `dev`,
-but that also ensures that if I only update the `dev` section, the I can verify that the
-dependencies stay in sync on both files.
+but that also ensures that if I only update the `dev` section, then I can verify that the
+dependencies stay in sync on both lock files.
 
 # Disclaimer
 
