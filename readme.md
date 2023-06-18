@@ -9,12 +9,6 @@ calling Baka. Baka will:
 - Create lock files using `pip-tools` based on the contents of your project's `pyproject.toml`.
 - Install and update dependencies based on the lock files.
 
-**This is in no way a sales pitch**, only sharing my insanity. I'm resistant to [Poetry][poetry]
-(some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
-like Poetry doesn't mean you shouldn't use it. You probably should, it's a good tool.
-
-[poetry]: https://python-poetry.org/
-
 Typical project layout is:
 
 ```
@@ -42,6 +36,21 @@ local env using `make update`.
 Note that this methodology generates all of the main dependencies in the both the `main` and `dev`,
 but that also ensures that if I only update the `dev` section, the I can verify that the
 dependencies stay in sync on both files.
+
+# Disclaimer
+
+**This is in no way a sales pitch**, only sharing my insanity. I'm resistant to [Poetry][poetry]
+(some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
+like Poetry doesn't mean you shouldn't use it. You probably should, it's a good tool.
+
+[poetry]: https://python-poetry.org/
+
+Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pyproject.toml` +
+`Makefile` to begin with.
+
+[blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
+
+# Outstanding Issues
 
 There are a few outstanding issues with this methodology:
 
