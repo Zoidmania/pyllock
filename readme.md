@@ -38,6 +38,23 @@ Note that this methodology generates all of the main dependencies in the both th
 but that also ensures that if I only update the `dev` section, then I can verify that the
 dependencies stay in sync on both lock files.
 
+## Requirements
+
+Baka only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
+tested with other shells. It also expects the following programs are available:
+
+- echo
+- make
+    - Tested with GNU Make 4.3.
+- mkdir
+- python
+    - You need to have Python available on the $PATH to create the virtual environment. Any version
+      of Python that includes the `venv` module (introduced in Python 3.3) will work. The initial
+      Python instance used to create your project's virtual environment **will not be modified**;
+      only the project's virtual environment will be modified.
+- rm
+- touch
+
 # Disclaimer
 
 **This is in no way a sales pitch**, only sharing my insanity. I'm resistant to [Poetry][poetry]
