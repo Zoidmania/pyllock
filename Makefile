@@ -38,19 +38,17 @@ BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 PYTHON := $(BASEDIR)/venv/bin/python
 REQS := $(BASEDIR)/lock
 
-## Recipes
+## Targets
 
 .PHONY: bootstrap
 bootstrap: venv init install
 
-.PHONY: venv
-venv:
-	@echo "$P $(C_BOLD_WHITE)Creating virtual environment...$(C_RESET)"
-	@# We need to grab the Python interpretter on $$PATH to create the venv first, so don't use
-	@# $$(PYTHON) here.
-	@if [ ! -d $(BASEDIR)/venv ]; then \
-		python -m venv $(BASEDIR)/venv --prompt="$(shell basename $(BASEDIR))"; \
-	fi
+.PHONY: clean
+clean:
+	@echo "$P $(C_BOLD_YELLOW)Removing project's egg-info...$(C_RESET)"
+	@rm -rf $(BASEDIR)/*.egg-info
+	@echo "$P $(C_BOLD_YELLOW)Removing virtual environment...$(C_RESET)"
+	@rm -rf $(BASEDIR)/venv
 
 .PHONY: init
 init:
@@ -70,6 +68,11 @@ install:
 	@$(PYTHON) -m pip install --upgrade -r $(REQS)/main -r $(REQS)/dev -e .
 	@$(PYTHON) -m pip check
 
+.PHONY: lint
+lint:
+	@echo "$P $(C_BOLD_WHITE)ruff check .$(C_RESET)"
+	@$(PYTHON) -m ruff check .
+
 .PHONY: lock
 lock:
 	@echo "$P $(C_BOLD_WHITE)Ensuring '$(BASEDIR)lock/' exists.$(C_RESET)"
@@ -81,22 +84,19 @@ lock:
 	@$(PYTHON) -m piptools compile --extra dev --upgrade --resolver backtracking \
 		-o $(REQS)/dev pyproject.toml
 
-.PHONY: update
-update: init lock install
-
-.PHONY: clean
-clean:
-	@echo "$P $(C_BOLD_YELLOW)Removing project's egg-info...$(C_RESET)"
-	@rm -rf $(BASEDIR)/*.egg-info
-	@echo "$P $(C_BOLD_YELLOW)Removing virtual environment...$(C_RESET)"
-	@rm -rf $(BASEDIR)/venv
-
-.PHONY: lint
-lint:
-	@echo "$P $(C_BOLD_WHITE)ruff check .$(C_RESET)"
-	@$(PYTHON) -m ruff check .
-
 .PHONY: test
 test:
 	@echo "$P $(C_BOLD_WHITE)pytest -v -s$(C_RESET)"
 	@$(PYTHON) -m pytest -v -s
+
+.PHONY: update
+update: init lock install
+
+.PHONY: venv
+venv:
+	@echo "$P $(C_BOLD_WHITE)Creating virtual environment...$(C_RESET)"
+	@# We need to grab the Python interpretter on $$PATH to create the venv first, so don't use
+	@# $$(PYTHON) here.
+	@if [ ! -d $(BASEDIR)/venv ]; then \
+		python -m venv $(BASEDIR)/venv --prompt="$(shell basename $(BASEDIR))"; \
+	fi
