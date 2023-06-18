@@ -94,7 +94,8 @@ There are a few outstanding issues with this methodology:
 - Removing "root" dependencies from the `pyproject.toml` doesn't work with the Makefile easily, so
   there isn't a target for that. After removing the dependency, you can do this manually:
   ```bash
-  act
+  cd /path/to/your/project/
+  act # my alias for 'source venv/bin/activate'
   python -m pip uninstall <removed package>
   python -m pip check
   make lock
