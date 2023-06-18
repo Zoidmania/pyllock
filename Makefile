@@ -57,6 +57,8 @@ update: init lock install
 
 .PHONY: clean
 clean:
+	@echo "$P Removing egg-info..."
+	@rm -rf $(BASEDIR)/*.egg-info
 	@echo "$P Removing virtual environment..."
 	@rm -rf $(BASEDIR)/venv
 
