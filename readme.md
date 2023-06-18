@@ -1,8 +1,10 @@
 # Baka
 
-On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and `pip-tools` to manage
-my Python projects these days (on Linux and Mac at least). I've workshopped this process into an
-informal standard that I'm now calling Baka. Baka will:
+On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
+[`pip-tools`][pip-tools] to manage my Python projects these days (on Linux and Mac at least). I've
+workshopped this process into an informal standard that I'm now calling Baka. Baka will:
+
+[pip-tools]: https://github.com/jazzband/pip-tools/
 
 - Bootstrap a virtual environment using the `venv` module with the latest versions of `pip`,
   `wheel`, and `pip-tools`.
