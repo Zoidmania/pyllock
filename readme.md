@@ -11,23 +11,6 @@ workshopped this process into an informal standard that I'm now calling Baka. Ba
 - Create lock files using `pip-tools` based on the contents of your project's `pyproject.toml`.
 - Install and update dependencies based on the lock files.
 
-Typical project layout is:
-
-```
-.
-├── LICENSE
-├── Makefile
-├── pyproject.toml
-├── readme.md
-├── lock
-│   ├── main
-│   └── dev
-├── src
-│   └── whatever.py
-└── tests
-    └── test-whatever.py
-```
-
 New developers can bootstrap their environments with ease using `make bootstrap` (the default
 target).
 
@@ -40,11 +23,25 @@ Note that this methodology generates all of the main dependencies in the both th
 but that also ensures that if I only update the `dev` section, then I can verify that the
 dependencies stay in sync on both lock files.
 
-To get started:
+To get started, simply place the `Makefile` at the root of your project, and:
 
 ```bash
 make # prints help text
 ```
+
+## Disclaimer
+
+**This is in no way a sales pitch**, only sharing my insanity. I'm resistant to [Poetry][poetry]
+(some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
+like Poetry doesn't mean you shouldn't use it. You probably should, it's a good tool.
+
+[poetry]: https://python-poetry.org/
+
+Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pyproject.toml` +
+`Makefile` to begin with.
+
+[blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
+
 
 ## Requirements for Usage
 
@@ -77,19 +74,6 @@ than `requirements.txt`, according to [PEP 621][pep-621]. Namely:
 [pep-621]: https://peps.python.org/pep-0621/
 [pep-508]: https://peps.python.org/pep-0508/
 
-## Disclaimer
-
-**This is in no way a sales pitch**, only sharing my insanity. I'm resistant to [Poetry][poetry]
-(some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
-like Poetry doesn't mean you shouldn't use it. You probably should, it's a good tool.
-
-[poetry]: https://python-poetry.org/
-
-Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pyproject.toml` +
-`Makefile` to begin with.
-
-[blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
-
 ## Outstanding Issues
 
 There are a few outstanding issues with this methodology:
@@ -117,3 +101,6 @@ There are a few outstanding issues with this methodology:
   ```
 - This doesn't work on Windows. `make` is generally not something you'd use on Windows, though I'm
   sure I could accomplish a similar batch script to do this too. But I don't want to.
+- It would be nice if we could pass arguments to `make pyproject`, or optionally prompt the user for
+  values to fill in. But, dumping the file to the project root and manually editing it is fine for
+  now.
