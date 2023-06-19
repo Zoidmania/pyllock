@@ -2,6 +2,7 @@
 
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/w/Zoidmania/baka/main)
 ![GitHub](https://img.shields.io/github/license/Zoidmania/baka)
+![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Baka)
 
 On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
 [`pip-tools`][pip-tools] to manage my Python projects these days (on Linux and Mac at least). I've
