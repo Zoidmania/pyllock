@@ -163,6 +163,83 @@ dev = [
 Repository = \"\"
 endef
 
+define HELP
+$(BD_BLUE)#$(RESET) $(BD_STD)Baka ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
+
+\"The Stupid Python Project Manager.\"
+
+For more details, see $(UL_BLUE)https://github.com/Zoidmania/baka$(RESET).
+
+This manager creates virtual environments for your Python project and manages
+them with a standard virtual environment and minimal tooling. It $(BD_UL_IT_STD)does not$(RESET)
+activate the environment for you! You must activate your virtual environment
+with:
+
+${SP}${SP}$$ $(BD_WHITE)cd /path/to/project/$(BD_RESET)
+${SP}${SP}$$ $(BD_WHITE)source venv/bin/activate$(BD_RESET)
+
+$(BD_BLUE)##$(RESET) $(BD_STD)Commands$(RESET) $(BD_BLUE)##$(RESET)
+
+All commands are issued in the following format:
+
+${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
+
+The following commands are available.
+
+$(BD_GREEN)help$(RESET)
+${SP}${SP}${SP}${SP}Prints this help text and exits. Default command.
+
+$(BD_GREEN)init$(RESET)
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET) and $(BD_GREEN)pyproject$(RESET) in that order.
+
+$(BD_GREEN)venv$(RESET)
+${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
+${SP}${SP}${SP}${SP}interpreter specified by $(IT_ORANGE)BAKA_PYTHON$(RESET), or the default interpreter on the
+${SP}${SP}${SP}${SP}$(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary
+${SP}${SP}${SP}${SP}dependencies of Baka. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one already
+${SP}${SP}${SP}${SP}exists.
+
+${SP}${SP}${SP}${SP}By default, the venv's prefix is the name of the parent directory of the
+${SP}${SP}${SP}${SP}project directory. This can be overridden by setting $(IT_ORANGE)BAKA_VENV_PREFIX$(RESET).
+
+$(BD_GREEN)pyproject$(RESET)
+${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the root of
+${SP}${SP}${SP}${SP}the project.
+
+$(BD_GREEN)clean$(RESET)
+${SP}${SP}${SP}${SP}Deletes the project's virtual environment, and any $(BD_IT_BLUE).egg-info$(RESET) metadata.
+
+$(BD_GREEN)lock$(RESET)
+${SP}${SP}${SP}${SP}Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET).
+${SP}${SP}${SP}${SP}Dependencies are $(BD_UL_IT_STD)not$(RESET) installed with this command.
+
+$(BD_GREEN)install$(RESET)
+${SP}${SP}${SP}${SP}Installs dependencies from the lock files, including the project
+${SP}${SP}${SP}${SP}itself, to the project's virtual environment.
+
+$(BD_GREEN)update$(RESET)
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET) in that order.
+
+$(BD_BLUE)##$(RESET) $(BD_STD)Getting Started$(RESET) $(BD_BLUE)##$(RESET)
+
+You $(BD_UL_IT_STD)must$(RESET) choose a Python interpreter to use for initializing the virtual
+environment (venv). Set the environment variable $(IT_ORANGE)BAKA_PYTHON$(RESET) to the your
+interpreter of choice, otherwise the default Python interpreter on $(IT_ORANGE)PATH$(RESET) is used.
+The interpreter specified with this variable is $(BD_UL_STD)only used to$(RESET) $(BD_UL_STD)create the venv$(RESET).
+
+To get started, place the Baka $(BD_IT_BLUE)Makefile$(RESET) in the root of your project. Then,
+$(BD_UL_IT_STD)remove any existing venvs from your project$(RESET).
+
+To start managing a project, simply run the following and begin tracking your
+dependencies in the generated $(BD_IT_BLUE)project.toml$(RESET).
+
+${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)init$(RESET)
+
+You $(BD_UL_IT_STD)must$(RESET) specify your project's dependencies according to $(BD_MAGENTA)PEP 621$(RESET). Additional
+development dependencies should be specified in a list called $(BD_MAGENTA)dev$(RESET) in the
+$(BD_MAGENTA)[project.optional-dependencies]$(RESET) section.
+endef
+
 ## Targets
 
 .PHONY: init
@@ -182,80 +259,7 @@ clean:
 .PHONY: help
 help:
 	@# All of the spacing is designed to make the help text readable on a 80-column-width console.
-	@echo "$P $(BD_STD)Baka, the Stupid Python Project Manager. ¯\_(ツ)_/¯$(RESET)"
-	@echo "$P "
-	@echo "$P For more details, see $(UL_BLUE)https://github.com/Zoidmania/baka.$(RESET)"
-	@echo "$P "
-	@echo "$P This manager creates virtual environments for your Python project and"
-	@echo "$P manages them with a standard virtual environment and minimal tooling."
-	@echo "$P It $(BD_UL_IT_STD)does not$(RESET) activate the environment for you! You must activate your"
-	@echo "$P virtual environment with:"
-	@echo "$P "
-	@echo "$P   $$ $(BD_WHITE)cd /path/to/project/$(BD_RESET)"
-	@echo "$P   $$ $(BD_WHITE)source venv/bin/activate$(BD_RESET)"
-	@echo "$P "
-	@echo "$P $(BD_BLUE)## Commands ##$(RESET)"
-	@echo "$P "
-	@echo "$P All commands are issued in the following format:"
-	@echo "$P "
-	@echo "$P   $$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)"
-	@echo "$P "
-	@echo "$P The following commands are available."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)help$(RESET)"
-	@echo "$P     Prints this help text and exits. Default command."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)init$(RESET)"
-	@echo "$P     A convenience function that runs $(BD_GREEN)venv$(RESET) and $(BD_GREEN)pyproject$(RESET) in that order."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)venv$(RESET)"
-	@echo "$P     Creates a virtual environment at the root of the project, using the"
-	@echo "$P     Python interpreter specified by $(IT_ORANGE)BAKA_PYTHON$(RESET), or the default"
-	@echo "$P     interpreter on the $(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and"
-	@echo "$P     $(BD_IT_CYAN)pip-tools$(RESET), necessary dependencies of Baka. This command $(BD_IT_STD)does not$(RESET)"
-	@echo "$P     recreate the venv if one already exists."
-	@echo "$P "
-	@echo "$P     By default, the venv's prefix is the name of the parent directory of"
-	@echo "$P     the project directory. This can be overridden by setting $(IT_ORANGE)BAKA_VENV_PREFIX$(RESET)."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)pyproject$(RESET)"
-	@echo "$P     Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the"
-	@echo "$P     root of the project."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)clean$(RESET)"
-	@echo "$P     Deletes the project's virtual environment, and any $(BD_IT_BLUE).egg-info$(RESET) metadata."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)lock$(RESET)"
-	@echo "$P     Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET)."
-	@echo "$P     Dependencies are $(BD_UL_IT_STD)not$(RESET) installed with this command."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)install$(RESET)"
-	@echo "$P     Installs dependencies from the lock files, including the project"
-	@echo "$P     itself, to the project's virtual environment."
-	@echo "$P "
-	@echo "$P $(BD_GREEN)update$(RESET)"
-	@echo "$P     A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET) in that"
-	@echo "$P     order."
-	@echo "$P "
-	@echo "$P $(BD_BLUE)## Getting Started ##$(RESET)"
-	@echo "$P "
-	@echo "$P You $(BD_UL_IT_STD)must$(RESET) choose a Python interpreter to use for initializing the virtual"
-	@echo "$P environment (venv). Set the environment variable $(IT_ORANGE)BAKA_PYTHON$(RESET) to the your"
-	@echo "$P interpreter of choice, otherwise the default Python interpreter on $(IT_ORANGE)PATH$(RESET)"
-	@echo "$P is used. The interpreter specified with this variable is $(BD_UL_STD)only used to$(RESET)"
-	@echo "$P $(BD_UL_STD)create the venv$(RESET)."
-	@echo "$P "
-	@echo "$P To get started, place the Baka $(BD_IT_BLUE)Makefile$(RESET) in the root of your project."
-	@echo "$P Then, $(BD_UL_IT_STD)remove any existing venvs from your project$(RESET)."
-	@echo "$P "
-	@echo "$P To start managing a project, simply run the following and begin tracking"
-	@echo "$P your dependencies in the generated $(BD_IT_BLUE)project.toml$(RESET)."
-	@echo "$P "
-	@echo "$P   $$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)init$(RESET)"
-	@echo "$P "
-	@echo "$P You $(BD_UL_IT_STD)must$(RESET) specify your project's dependencies according to $(BD_MAGENTA)PEP 621$(RESET)."
-	@echo "$P Additional development dependencies should be specified in a list called"
-	@echo "$P $(BD_MAGENTA)dev$(RESET) in the $(BD_MAGENTA)[project.optional-dependencies]$(RESET) section."
+	@echo "$(HELP)"
 
 .PHONY: install
 install:

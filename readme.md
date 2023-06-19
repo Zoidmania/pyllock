@@ -49,9 +49,12 @@ Baka only works in Linux and Unix environments. It's designed for use with Bash,
 tested with other shells. It also expects the following programs are available:
 
 - `echo`
+- `mkdir`
+- `mv`
+- `rm`
+- `touch`
 - GNU `make`
     - Tested with GNU Make 4.3.
-- `mkdir`
 - `python3`
     - You need to have Python available on the `$PATH` to create the virtual environment. Any
       version of Python that includes the `venv` module (**introduced in Python 3.3**) will work.
@@ -59,8 +62,6 @@ tested with other shells. It also expects the following programs are available:
       modified**; only the project's virtual environment will be modified.
     - To specify a Python interpretter that isn't te default one on your `$PATH`, set the
       environment `BAKA_PYTHON` to the interpretter of your choice.
-- `rm`
-- `touch`
 
 In addition, your Python project must specify its dependencies in a `pyproject.toml` file, rather
 than `requirements.txt`, according to [PEP 621][pep-621]. Namely:
