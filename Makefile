@@ -1,9 +1,9 @@
 #################
 # Baka Makefile
+# v0.2.0
 #
-# https://github.com/Zoidmania/baka
+# For more details, see https://github.com/Zoidmania/baka.
 #
-# LICENSE
 # MIT License
 #
 # Copyright (c) 2023 Leland Vakarian
@@ -237,10 +237,6 @@ ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) an
 ${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to
 ${SP}${SP}${SP}${SP}avoid turd dependencies.
 
-$(BD_GREEN)restore-lock$(RESET)
-${SP}${SP}${SP}${SP}Restores lock files from their backups. Current lock files become the new
-${SP}${SP}${SP}${SP}backups.
-
 $(BD_GREEN)update$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET), in that order.
 ${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or
@@ -333,28 +329,6 @@ pyproject:
 
 .PHONY: refresh
 refresh: clean update
-
-.PHONY: restore-lock
-restore-lock:
-	@if [ -f $(REQS)/main ]; then \
-		mv $(REQS)/main $(REQS)/main.temp; \
-	fi
-	@if [ -f $(REQS)/main.bak ]; then \
-		mv $(REQS)/main.bak $(REQS)/main; \
-	fi
-	@if [ -f $(REQS)/main.temp ]; then \
-		mv $(REQS)/main.temp $(REQS)/main.bak; \
-	fi
-	@if [ -f $(REQS)/dev ]; then \
-		mv $(REQS)/dev $(REQS)/dev.temp; \
-	fi
-	@if [ -f $(REQS)/dev.bak ]; then \
-		mv $(REQS)/dev.bak $(REQS)/dev; \
-	fi
-	@if [ -f $(REQS)/dev.temp ]; then \
-		mv $(REQS)/dev.temp $(REQS)/dev.bak; \
-	fi
-	@echo "$P $(BD_WHITE)Lock files restored from backup.$(RESET)"
 
 .PHONY: update
 update: venv lock install
