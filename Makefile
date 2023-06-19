@@ -12,10 +12,11 @@
 .DEFAULT_GOAL := help
 
 ## ANSI Escapes
-# All high-intensity colors aren't boldable. The only 'high-intensity' color used here is Orange.
+# All high-intensity colors aren't boldable. The only high-intensity color used here is Orange.
 # For more info, see https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit.
+#
+# NB: When passing to 'echo', you shouldn't add quotes.
 
-# When passing to 'echo', you shouldn't add quotes.
 BLACK   := \033[0;30m
 RED     := \033[0;31m
 GREEN   := \033[0;32m
