@@ -207,7 +207,7 @@ $(BD_GREEN)pyproject$(RESET)
 ${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the root of
 ${SP}${SP}${SP}${SP}the project.
 
-$(BD_GREEN)refresh-venv$(RESET)
+$(BD_GREEN)refresh$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order.
 ${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to
 ${SP}${SP}${SP}${SP}avoid turd dependencies.
@@ -306,7 +306,7 @@ pyproject:
 	fi
 	@echo "$P $(BD_YELLOW)Edit your$(RESET) $(BD_IT_BLUE)project.toml$(RESET) $(BD_YELLOW)metadata and dependencies before locking!$(RESET)"
 
-.PHONY: refresh-venv
+.PHONY: refresh
 refresh: clean update
 
 .PHONY: restore-lock
