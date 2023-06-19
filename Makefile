@@ -186,11 +186,40 @@ ${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
 
 The following commands are available.
 
+$(BD_GREEN)clean$(RESET)
+${SP}${SP}${SP}${SP}Deletes the project's virtual environment, and any $(BD_IT_BLUE).egg-info$(RESET) metadata.
+
 $(BD_GREEN)help$(RESET)
 ${SP}${SP}${SP}${SP}Prints this help text and exits. Default command.
 
 $(BD_GREEN)init$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET) and $(BD_GREEN)pyproject$(RESET) in that order.
+
+$(BD_GREEN)install$(RESET)
+${SP}${SP}${SP}${SP}Installs dependencies from the lock files, including the project
+${SP}${SP}${SP}${SP}itself, to the project's virtual environment.
+
+$(BD_GREEN)lock$(RESET)
+${SP}${SP}${SP}${SP}Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET).
+${SP}${SP}${SP}${SP}Dependencies are $(BD_UL_IT_STD)not$(RESET) installed with this command.
+
+$(BD_GREEN)pyproject$(RESET)
+${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the root of
+${SP}${SP}${SP}${SP}the project.
+
+$(BD_GREEN)refresh-venv$(RESET)
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order.
+${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to
+${SP}${SP}${SP}${SP}avoid turd dependencies.
+
+$(BD_GREEN)restore-lock$(RESET)
+${SP}${SP}${SP}${SP}Restores lock files from their backups. Current lock files become the new
+${SP}${SP}${SP}${SP}backups.
+
+$(BD_GREEN)update$(RESET)
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET), in that order.
+${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or
+${SP}${SP}${SP}${SP}updating versions of your current dependencies.
 
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
@@ -201,24 +230,6 @@ ${SP}${SP}${SP}${SP}exists.
 
 ${SP}${SP}${SP}${SP}By default, the venv's prefix is the name of the parent directory of the
 ${SP}${SP}${SP}${SP}project directory. This can be overridden by setting $(IT_ORANGE)BAKA_VENV_PREFIX$(RESET).
-
-$(BD_GREEN)pyproject$(RESET)
-${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the root of
-${SP}${SP}${SP}${SP}the project.
-
-$(BD_GREEN)clean$(RESET)
-${SP}${SP}${SP}${SP}Deletes the project's virtual environment, and any $(BD_IT_BLUE).egg-info$(RESET) metadata.
-
-$(BD_GREEN)lock$(RESET)
-${SP}${SP}${SP}${SP}Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET).
-${SP}${SP}${SP}${SP}Dependencies are $(BD_UL_IT_STD)not$(RESET) installed with this command.
-
-$(BD_GREEN)install$(RESET)
-${SP}${SP}${SP}${SP}Installs dependencies from the lock files, including the project
-${SP}${SP}${SP}${SP}itself, to the project's virtual environment.
-
-$(BD_GREEN)update$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET) in that order.
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Getting Started$(RESET) $(BD_BLUE)##$(RESET)
 
@@ -273,14 +284,14 @@ lock:
 
 	@echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"
 	@if [ -f $(REQS)/main ]; then \
-		mv $(REQS)/main $(REQS)/main.old; \
+		mv $(REQS)/main $(REQS)/main.bak; \
 	fi
 	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking \
 		-o $(REQS)/main $(BASEDIR)/pyproject.toml
 
 	@echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"
 	@if [ -f $(REQS)/dev ]; then \
-		mv $(REQS)/dev $(REQS)/dev.old; \
+		mv $(REQS)/dev $(REQS)/dev.bak; \
 	fi
 	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking \
 		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
@@ -291,9 +302,34 @@ pyproject:
 		echo "$(PYPROJECT_TOML)" > $(BASEDIR)/pyproject.toml; \
 		echo "$P Created $(BD_IT_BLUE)project.toml$(RESET) file in project root from template."; \
 	else \
-		echo "$P $(BD_IT_BLUE)project.toml$(RESET) $(BD_RED)already exists! Aborting!$(RESET)"; \
+		echo "$P $(BD_IT_BLUE)project.toml$(RESET) $(BD_RED)already exists!$(RESET) $(BD_YELLOW)Skipping creating from template!$(RESET)"; \
 	fi
 	@echo "$P $(BD_YELLOW)Edit your$(RESET) $(BD_IT_BLUE)project.toml$(RESET) $(BD_YELLOW)metadata and dependencies before locking!$(RESET)"
+
+.PHONY: refresh-venv
+refresh: clean update
+
+.PHONY: restore-lock
+restore-lock:
+	@if [ -f $(REQS)/main ]; then \
+		mv $(REQS)/main $(REQS)/main.temp; \
+	fi
+	@if [ -f $(REQS)/main.bak ]; then \
+		mv $(REQS)/main.bak $(REQS)/main; \
+	fi
+	@if [ -f $(REQS)/main.temp ]; then \
+		mv $(REQS)/main.temp $(REQS)/main.bak; \
+	fi
+	@if [ -f $(REQS)/dev ]; then \
+		mv $(REQS)/dev $(REQS)/dev.temp; \
+	fi
+	@if [ -f $(REQS)/dev.bak ]; then \
+		mv $(REQS)/dev.bak $(REQS)/dev; \
+	fi
+	@if [ -f $(REQS)/dev.temp ]; then \
+		mv $(REQS)/dev.temp $(REQS)/dev.bak; \
+	fi
+	@echo "$P $(BD_WHITE)Lock files restored from backup.$(RESET)"
 
 .PHONY: update
 update: venv lock install
