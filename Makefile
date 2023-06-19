@@ -124,20 +124,24 @@ endif
 
 ## pyproject.toml Template
 
+# It's possible to preserve leading spaces by making a variable and inserting a reference at
+# the beginning. Bad, but I don't know of a way around this.
+SP = " "
+
 define PYPROJECT_TOML
 [project]
 # Package names should follow PEP 423.
-name = ""
-version = ""
-description = ""
+name = \"\"
+version = \"\"
+description = \"\"
 authors = [
-    {name = "", email = ""},
+${SP}${SP}${SP}${SP}{name = \"\", email = \"\"},
 ]
-readme = "readme.md"
-# For example, ">= 3.10"
-requires-python = ""
+readme = \"readme.md\"
+# For example, \">= 3.10\"
+requires-python = \"\"
 # See: https://pypi.org/classifiers/
-classifiers = ["Private :: Do Not Upload"]
+classifiers = [\"Private :: Do Not Upload\"]
 
 dependencies = [
 
@@ -149,7 +153,7 @@ dev = [
 ]
 
 [project.urls]
-Repository = ""
+Repository = \"\"
 endef
 
 ## Targets
@@ -164,6 +168,9 @@ clean:
 
 	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
 	@rm -rf $(BASEDIR)/venv
+
+	@echo "$P $(BD_YELLOW)Removing lock files...$(RESET)"
+	@rm -rf $(BASEDIR)/lock
 
 .PHONY: help
 help:
@@ -261,9 +268,9 @@ lock:
 pyproject:
 	@if [ ! -f $(BASEDIR)/pyproject.toml ]; then \
 		echo "$(PYPROJECT_TOML)" > $(BASEDIR)/pyproject.toml; \
-		echo "$P Created $(BD_IT_BLUE)project.toml$(RESET) file in project root from template.."; \
+		echo "$P Created $(BD_IT_BLUE)project.toml$(RESET) file in project root from template."; \
 	else \
-		echo "$P $(BD_IT_BLUE)project.toml$(RESET) already exists! Aborting!"; \
+		echo "$P $(BD_IT_BLUE)project.toml$(RESET) $(BD_RED)already exists! Aborting!$(RESET)"; \
 	fi
 
 .PHONY: update
