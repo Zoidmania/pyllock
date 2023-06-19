@@ -125,6 +125,7 @@ endif
 
 define PYPROJECT_TOML
 [project]
+# Package names should follow PEP 423.
 name = ""
 version = ""
 description = ""
@@ -132,7 +133,9 @@ authors = [
     {name = "", email = ""},
 ]
 readme = "readme.md"
-requires-python = ">=3.10"
+# For example, ">= 3.10"
+requires-python = ""
+# See: https://pypi.org/classifiers/
 classifiers = ["Private :: Do Not Upload"]
 
 dependencies = [
@@ -145,7 +148,7 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/Zoidmania/baka"
+Repository = ""
 endef
 
 ## Targets
