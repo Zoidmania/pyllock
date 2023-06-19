@@ -45,6 +45,42 @@ Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pypr
 
 [blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
 
+## Rationale
+
+I'm a fan of using minimal tooling to get things working, especially built-in tools. Since `pip` and
+`venv` ship with most standard Python installations, that's been my workflow for quite some time. I
+used Poetry for a while because it made life easier, but it always bugged me that I was replacing
+`pip`'s functionality.
+
+For a few years, Poetry was the only _good_ way to manage your Python dependencies. Its ability to
+resolve the dependency graph introduced modern project management to Python development, and it
+continues to enjoy widespread usage.
+
+However, `pip` has received upgrades in recent years, adding its own [dependency resolver][pip-res]
+(enabled by default). It's still not quite as good as Poetry's, but it's sufficient. That's one
+piece of the puzzle solved.
+
+[pip-res]: https://pip.pypa.io/en/stable/topics/dependency-resolution/
+
+With the introduction of [PEP 621][pep-621], we gained the ability to declare the packages we
+required in a concise manner along with project metadata. Gone were the days of needing to supply a
+large `requirements.txt` file and wondering "which of these packages do I _actually_ need, and which
+of them are dependencies of my dependencies?" Coupled with `pip`'s new resolver and `venv` to
+isolate project dependencies, the only thing missing is the ability to lock the dependency graph.
+
+Since `pip` still doesn't have a good way to do this, my original inclination was to simply
+`pip freeze` after installing dependencies, but this has a couple of problems:
+
+- Classic `requirements.txt` files make for poor lockfiles because `pip freeze` emits dependencies
+  in alphabetical order, not in an order that's suitable for ordered installations (rare).
+- This requires installing dependencies _before_ locking, which is an antipattern IMO. If dependency
+  installation fails, then you may have just corrupted your environment.
+
+This is where `pip-tools` comes in, a package that allows developers to "compile" requirements in a
+temporary, isolated virtual environment without messing with your development env, in addition to
+labeling and ordering the dependencies in a sensible manner. Baka uses this feature of `pip-tools`
+to generate its lock files.
+
 ## Installation
 
 Simple:
