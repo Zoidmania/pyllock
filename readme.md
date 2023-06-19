@@ -1,5 +1,7 @@
 # Baka ¯\\\_(ツ)_/¯
 
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/w/Zoidmania/baka/master)
+
 On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
 [`pip-tools`][pip-tools] to manage my Python projects these days (on Linux and Mac at least). I've
 workshopped this process into an informal standard that I'm now calling Baka. Baka will:
@@ -40,6 +42,15 @@ Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pypr
 `Makefile` to begin with.
 
 [blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
+
+## Installation
+
+Simple:
+
+```bash
+# Download the Makefile to the root of your project
+curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o /<path>/<to>/<project>/Makefile
+```
 
 ## Requirements for Usage
 
