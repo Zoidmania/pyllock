@@ -49,7 +49,7 @@ Baka only works in Linux and Unix environments. It's designed for use with Bash,
 tested with other shells. It also expects the following programs are available:
 
 - `echo`
-- `make`
+- GNU `make`
     - Tested with GNU Make 4.3.
 - `mkdir`
 - `python3`
