@@ -1,4 +1,4 @@
-# Baka
+# Baka ¯\\\_(ツ)_/¯
 
 On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
 [`pip-tools`][pip-tools] to manage my Python projects these days (on Linux and Mac at least). I've
@@ -40,22 +40,30 @@ Note that this methodology generates all of the main dependencies in the both th
 but that also ensures that if I only update the `dev` section, then I can verify that the
 dependencies stay in sync on both lock files.
 
+To get started:
+
+```bash
+make # prints help text
+```
+
 ## Requirements for Usage
 
 Baka only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
 tested with other shells. It also expects the following programs are available:
 
-- echo
-- make
+- `echo`
+- `make`
     - Tested with GNU Make 4.3.
-- mkdir
-- python
-    - You need to have Python available on the $PATH to create the virtual environment. Any version
-      of Python that includes the `venv` module (introduced in Python 3.3) will work. The initial
-      Python instance used to create your project's virtual environment **will not be modified**;
-      only the project's virtual environment will be modified.
-- rm
-- touch
+- `mkdir`
+- `python3`
+    - You need to have Python available on the `$PATH` to create the virtual environment. Any
+      version of Python that includes the `venv` module (**introduced in Python 3.3**) will work.
+      The initial Python instance used to create your project's virtual environment **will not be
+      modified**; only the project's virtual environment will be modified.
+    - To specify a Python interpretter that isn't te default one on your `$PATH`, set the
+      environment `BAKA_PYTHON` to the interpretter of your choice.
+- `rm`
+- `touch`
 
 In addition, your Python project must specify its dependencies in a `pyproject.toml` file, rather
 than `requirements.txt`, according to [PEP 621][pep-621]. Namely:
@@ -104,7 +112,8 @@ There are a few outstanding issues with this methodology:
   the project is large:
   ```bash
   make clean
-  make
+  make init
+  make update
   ```
 - This doesn't work on Windows. `make` is generally not something you'd use on Windows, though I'm
   sure I could accomplish a similar batch script to do this too. But I don't want to.
