@@ -121,6 +121,33 @@ ifndef BAKA_PYTHON
 BAKA_PYTHON := /usr/bin/env python3
 endif
 
+## pyproject.toml Template
+
+define PYPROJECT_TOML
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "", email = ""},
+]
+readme = "readme.md"
+requires-python = ">=3.10"
+classifiers = ["Private :: Do Not Upload"]
+
+dependencies = [
+
+]
+
+[project.optional-dependencies]
+dev = [
+
+]
+
+[project.urls]
+Repository = "https://github.com/Zoidmania/baka"
+endef
+
 ## Targets
 
 .PHONY: init
@@ -228,7 +255,12 @@ lock:
 
 .PHONY: pyproject
 pyproject:
-	@echo "$P $(BD_WHITE)Created 'pyproject.toml' file in project root.$(RESET)"
+	@if [ ! -f $(BASEDIR)/pyproject.toml ]; then \
+		echo "$(PYPROJECT_TOML)" > $(BASEDIR)/pyproject.toml; \
+		echo "$P Created $(BD_IT_BLUE)project.toml$(RESET) file in project root from template.."; \
+	else \
+		echo "$P $(BD_IT_BLUE)project.toml$(RESET) already exists! Aborting!"; \
+	fi
 
 .PHONY: update
 update: venv lock install
