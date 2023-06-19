@@ -118,8 +118,13 @@ P := "'$(BD_GREEN)'['$(WHITE)'Baka'$(BD_GREEN)']'$(RESET)'"
 BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 VENV := $(BASEDIR)/venv/bin/python
 REQS := $(BASEDIR)/lock
+
 ifndef BAKA_PYTHON
 BAKA_PYTHON := /usr/bin/env python3
+endif
+
+ifndef BAKA_VENV_PREFIX
+BAKA_VENV_PREFIX := "$(shell basename $(BASEDIR))"
 endif
 
 ## pyproject.toml Template
@@ -129,6 +134,8 @@ endif
 SP = " "
 
 define PYPROJECT_TOML
+# If any strings are left empty, `make lock` will fail.
+# To debug, run `pip install .` to emit errors.
 [project]
 # Package names should follow PEP 423.
 name = \"\"
@@ -208,6 +215,9 @@ help:
 	@echo "$P     $(BD_IT_CYAN)pip-tools$(RESET), necessary dependencies of Baka. This command $(BD_IT_STD)does not$(RESET)"
 	@echo "$P     recreate the venv if one already exists."
 	@echo "$P "
+	@echo "$P     By default, the venv's prefix is the name of the parent directory of"
+	@echo "$P     the project directory. This can be overridden by setting $(IT_ORANGE)BAKA_VENV_PREFIX$(RESET)."
+	@echo "$P "
 	@echo "$P $(BD_GREEN)pyproject$(RESET)"
 	@echo "$P     Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the"
 	@echo "$P     root of the project."
@@ -255,14 +265,21 @@ install:
 
 .PHONY: lock
 lock:
-	@echo "$P $(BD_WHITE)Ensuring '$(BASEDIR)lock/' exists.$(RESET)"
 	@$(shell mkdir -p $(REQS))
+
 	@echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"
-	@$(VENV) -m piptools compile --upgrade --resolver backtracking \
-		-o $(REQS)/main pyproject.toml
+	@if [ -f $(REQS)/main ]; then \
+		mv $(REQS)/main $(REQS)/main.old; \
+	fi
+	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking \
+		-o $(REQS)/main $(BASEDIR)/pyproject.toml
+
 	@echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"
-	@$(VENV) -m piptools compile --extra dev --upgrade --resolver backtracking \
-		-o $(REQS)/dev pyproject.toml
+	@if [ -f $(REQS)/dev ]; then \
+		mv $(REQS)/dev $(REQS)/dev.old; \
+	fi
+	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking \
+		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
 
 .PHONY: pyproject
 pyproject:
@@ -272,6 +289,7 @@ pyproject:
 	else \
 		echo "$P $(BD_IT_BLUE)project.toml$(RESET) $(BD_RED)already exists! Aborting!$(RESET)"; \
 	fi
+	@echo "$P $(BD_YELLOW)Edit your$(RESET) $(BD_IT_BLUE)project.toml$(RESET) $(BD_YELLOW)metadata and dependencies before locking!$(RESET)"
 
 .PHONY: update
 update: venv lock install
@@ -282,7 +300,7 @@ venv:
 	@# $$(VENV) here.
 	@if [ ! -d $(BASEDIR)/venv ]; then \
 		echo "$P $(BD_WHITE)Creating virtual environment...$(RESET)"; \
-		$(BAKA_PYTHON) -m venv $(BASEDIR)/venv --prompt="$(shell basename $(BASEDIR))"; \
+		$(BAKA_PYTHON) -m venv $(BASEDIR)/venv --prompt=$(BAKA_VENV_PREFIX); \
 	fi
 
 	@echo "$P $(BD_WHITE)Upgrading pip...$(RESET)"
