@@ -138,29 +138,15 @@ RESET := \033[0m
 # When creating a macro , even if it'll be passed to 'echo' later, you _should_ add quotes.
 P := "'$(BD_GREEN)'['$(WHITE)'Baka'$(BD_GREEN)']'$(RESET)'"
 
-## Directory and Env Helpers
-
-BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
-VENV := $(BASEDIR)/venv/bin/python
-REQS := $(BASEDIR)/lock
-
-ifndef BAKA_PYTHON
-BAKA_PYTHON := /usr/bin/env python3
-endif
-
-ifndef BAKA_VENV_PREFIX
-BAKA_VENV_PREFIX := "$(shell basename $(BASEDIR))"
-endif
-
-## pyproject.toml Template
+## Templates
 
 # It's possible to preserve leading spaces by making a variable and inserting a reference at
 # the beginning. Bad, but I don't know of a way around this.
 SP = " "
 
 define PYPROJECT_TOML
-# If any strings are left empty, `make lock` will fail.
-# To debug, run `pip install .` to emit errors.
+# If any strings are left empty, 'make lock' will fail.
+# To debug, run 'pip install .' to emit errors.
 [project]
 # Package names should follow PEP 423.
 name = \"\"
@@ -221,8 +207,7 @@ $(BD_GREEN)init$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET) and $(BD_GREEN)pyproject$(RESET) in that order.
 
 $(BD_GREEN)install$(RESET)
-${SP}${SP}${SP}${SP}Installs dependencies from the lock files, including the project
-${SP}${SP}${SP}${SP}itself, to the project's virtual environment.
+${SP}${SP}${SP}${SP}Alias for $(BD_GREEN)sync$(RESET).
 
 $(BD_GREEN)lock$(RESET)
 ${SP}${SP}${SP}${SP}Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET).
@@ -233,14 +218,21 @@ ${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from th
 ${SP}${SP}${SP}${SP}the project.
 
 $(BD_GREEN)refresh$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order.
-${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to
-${SP}${SP}${SP}${SP}avoid turd dependencies.
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order. Suitable
+${SP}${SP}${SP}${SP}for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to avoid turd dependencies.
+
+$(BD_GREEN)sync$(RESET)
+${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any new
+${SP}${SP}${SP}${SP}dependencies will be installed, and any removed dependencies will be
+${SP}${SP}${SP}${SP}uninstalled.
+
+${SP}${SP}${SP}${SP}By default, $(BD_UL_IT_STD)development$(RESET) dependencies are synced. Set $(IT_ORANGE)BAKA_ENV$(RESET) to either
+${SP}${SP}${SP}${SP}$(BD_STD)'main'$(RESET) or $(BD_STD)'dev'$(RESET) to select between the two available dependency lists.
 
 $(BD_GREEN)update$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET), in that order.
-${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or
-${SP}${SP}${SP}${SP}updating versions of your current dependencies.
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
+${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or updating versions
+${SP}${SP}${SP}${SP}of your current dependencies.
 
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
@@ -272,10 +264,31 @@ development dependencies should be specified in a list called $(BD_MAGENTA)dev$(
 $(BD_MAGENTA)[project.optional-dependencies]$(RESET) section.
 endef
 
+## Directory and Env Helpers
+
+BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+VENV := $(BASEDIR)/venv/bin/python
+REQS := $(BASEDIR)/lock
+
+ifndef BAKA_PYTHON
+BAKA_PYTHON := /usr/bin/env python3
+endif
+
+ifndef BAKA_VENV_PREFIX
+BAKA_VENV_PREFIX := "$(shell basename $(BASEDIR))"
+endif
+
+ifndef BAKA_ENV
+BAKA_ENV := dev
+endif
+
 ## Targets
 
 .PHONY: init
 init: venv pyproject
+
+.PHONY: install
+init: sync
 
 .PHONY: clean
 clean:
@@ -293,27 +306,15 @@ help:
 	@# All of the spacing is designed to make the help text readable on a 80-column-width console.
 	@echo "$(HELP)"
 
-.PHONY: install
-install:
-	@echo "$P $(BD_WHITE)Installing Python dependencies...$(RESET)"
-	@$(VENV) -m pip install --upgrade -r $(REQS)/main -r $(REQS)/dev -e .
-	@$(VENV) -m pip check
-
 .PHONY: lock
 lock:
 	@$(shell mkdir -p $(REQS))
 
 	@echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"
-	@if [ -f $(REQS)/main ]; then \
-		mv $(REQS)/main $(REQS)/main.bak; \
-	fi
 	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking \
 		-o $(REQS)/main $(BASEDIR)/pyproject.toml
 
 	@echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"
-	@if [ -f $(REQS)/dev ]; then \
-		mv $(REQS)/dev $(REQS)/dev.bak; \
-	fi
 	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking \
 		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
 
@@ -330,8 +331,22 @@ pyproject:
 .PHONY: refresh
 refresh: clean update
 
+.PHONY: sync
+sync:
+	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
+
+	@if [ "$(BAKA_ENV)" = "main" ]; then \
+		$(VENV) -m piptools sync $(REQS)/main; \
+		$(VENV) -m pip check; \
+	elif [ "$(BAKA_ENV)" = "dev" ]; then \
+		$(VENV) -m piptools sync $(REQS)/dev; \
+		$(VENV) -m pip check; \
+	else \
+		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)BAKA_ENV$(RESET): $(BAKA_ENV)"; \
+	fi
+
 .PHONY: update
-update: venv lock install
+update: venv lock sync
 
 .PHONY: venv
 venv:
@@ -345,10 +360,5 @@ venv:
 	@echo "$P $(BD_WHITE)Upgrading pip...$(RESET)"
 	@$(VENV) -m pip install --upgrade pip
 
-	@echo "$P $(BD_WHITE)Installing pip-tools and wheel...$(RESET)"
+	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
 	@$(VENV) -m pip install --upgrade pip-tools wheel
-	@if [ ! -d $(REQS) ]; then \
-		mkdir -p $(REQS); \
-		touch $(REQS)/main; \
-		touch $(REQS)/dev; \
-	fi
