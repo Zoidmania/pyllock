@@ -207,8 +207,7 @@ $(BD_GREEN)init$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET) and $(BD_GREEN)pyproject$(RESET) in that order.
 
 $(BD_GREEN)install$(RESET)
-${SP}${SP}${SP}${SP}Installs dependencies from the lock files, including the project
-${SP}${SP}${SP}${SP}itself, to the project's virtual environment.
+${SP}${SP}${SP}${SP}Alias for $(BD_GREEN)sync$(RESET).
 
 $(BD_GREEN)lock$(RESET)
 ${SP}${SP}${SP}${SP}Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET).
@@ -219,19 +218,21 @@ ${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from th
 ${SP}${SP}${SP}${SP}the project.
 
 $(BD_GREEN)refresh$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order.
-${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to
-${SP}${SP}${SP}${SP}avoid turd dependencies.
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order. Suitable
+${SP}${SP}${SP}${SP}for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to avoid turd dependencies.
 
 $(BD_GREEN)sync$(RESET)
-${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any
-${SP}${SP}${SP}${SP}new dependencies will be installed, and any removed dependencies will be
+${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any new
+${SP}${SP}${SP}${SP}dependencies will be installed, and any removed dependencies will be
 ${SP}${SP}${SP}${SP}uninstalled.
 
+${SP}${SP}${SP}${SP}By default, $(BD_UL_IT_STD)development$(RESET) dependencies are synced. Set $(IT_ORANGE)BAKA_ENV$(RESET) to either
+${SP}${SP}${SP}${SP}$(BD_STD)'main'$(RESET) or $(BD_STD)'dev'$(RESET) to select between the two available dependency lists.
+
 $(BD_GREEN)update$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET), in that order.
-${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or
-${SP}${SP}${SP}${SP}updating versions of your current dependencies.
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
+${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or updating versions
+${SP}${SP}${SP}${SP}of your current dependencies.
 
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
@@ -286,6 +287,9 @@ endif
 .PHONY: init
 init: venv pyproject
 
+.PHONY: install
+init: sync
+
 .PHONY: clean
 clean:
 	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
@@ -301,12 +305,6 @@ clean:
 help:
 	@# All of the spacing is designed to make the help text readable on a 80-column-width console.
 	@echo "$(HELP)"
-
-.PHONY: install
-install:
-	@echo "$P $(BD_WHITE)Installing Python dependencies...$(RESET)"
-	@$(VENV) -m pip install --upgrade -r $(REQS)/main -r $(REQS)/dev -e .
-	@$(VENV) -m pip check
 
 .PHONY: lock
 lock:
@@ -339,8 +337,10 @@ sync:
 
 	@if [ "$(BAKA_ENV)" = "main" ]; then \
 		$(VENV) -m piptools sync $(REQS)/main; \
+		$(VENV) -m pip check; \
 	elif [ "$(BAKA_ENV)" = "dev" ]; then \
 		$(VENV) -m piptools sync $(REQS)/dev; \
+		$(VENV) -m pip check; \
 	else \
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)BAKA_ENV$(RESET): $(BAKA_ENV)"; \
 	fi
