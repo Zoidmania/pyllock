@@ -158,12 +158,10 @@ Typical usage for new Baka users is as follows:
     - This target installs dependencies defined in the _lock files_, not directly from
       `pyproject.toml`.
 
-If you want to _add_ new dependencies to an existing project, running `make update` will update your
-venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and install based on
-the new lock. This target is a convenience that runs the `venv`, `lock`, and `install` targets, in
-that order.
-
-If you want to _remove_ dependencies, see [Removing Dependencies](#removing-dependencies).
+If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
+will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
+install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
+targets, in that order.
 
 **_Nota Bene_**: `make` subshells the calls, so you can't activate the virtual environment with
 `make` in _your_ shell session. I have a shell alias that does it (when run from the root of a
@@ -171,28 +169,4 @@ project):
 
 ```bash
 alias act="source venv/bin/activate"
-```
-
-### Removing Dependencies
-
-Removing "root" dependencies from the `pyproject.toml` doesn't work with the `Makefile` easily, so
-there isn't a target for that. After removing the dependency, you can do this manually, or use
-`make refresh` to rebuild the venv.
-
-Manual approach:
-
-```bash
-cd /path/to/your/project/
-act # my alias for 'source venv/bin/activate'
-python -m pip uninstall <removed package>
-python -m pip check
-make lock
-make install
-```
-
-The alternative approach is to nuke the venv and build it from scratch, but that's expensive,
-especially when the project is large (though made easier via `pip`'s wheel-caching feature):
-
-```bash
-make refresh
 ```
