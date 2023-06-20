@@ -122,9 +122,11 @@ file for you to get started). Namely:
 Simple:
 
 ```bash
-# Download the Makefile to the root of your project
-curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o /<path>/<to>/<project>/Makefile
+# Download the Makefile
+curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o Makefile
 ```
+
+Place the `Makefile` at the root of your project.
 
 ## Usage
 
