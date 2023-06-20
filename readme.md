@@ -1,6 +1,5 @@
 # Baka ¯\\\_(ツ)_/¯
 
-![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/w/Zoidmania/baka/main)
 ![GitHub](https://img.shields.io/github/license/Zoidmania/baka)
 ![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Baka)
 
@@ -81,16 +80,7 @@ temporary, isolated virtual environment without messing with your development en
 labeling and ordering the dependencies in a sensible manner. Baka uses this feature of `pip-tools`
 to generate its lock files.
 
-## Installation
-
-Simple:
-
-```bash
-# Download the Makefile to the root of your project
-curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o /<path>/<to>/<project>/Makefile
-```
-
-## Requirements for Usage
+## Requirements
 
 Baka only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
 tested with other shells. It also expects the following programs are available:
@@ -113,53 +103,128 @@ tested with other shells. It also expects the following programs are available:
       used to create the venv.
 
 In addition, your Python project must specify its dependencies in a `pyproject.toml` file, rather
-than `requirements.txt`, according to [PEP 621][pep-621]. Namely:
+than `requirements.txt`, according to [PEP 621][pep-621] (`make pyproject` will create a templated
+file for you to get started). Namely:
 
 - Specify your main dependencies in the `dependencies` list under the `[project]` section using
   [PEP 508][pep-508]-style strings.
 - Place the extra development dependencies (like linters, the test suite, etc) in a list called
   `dev` in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style
   strings.
+- Unlike `requirements.txt`, you _don't_ need to specify _all_ dependencies, only the ones your
+  project needs _directly_. Don't specify dependencies of your dependencies in `pyproject.toml`.
 
 [pep-621]: https://peps.python.org/pep-0621/
 [pep-508]: https://peps.python.org/pep-0508/
 
+## Installation
+
+Simple:
+
+```bash
+# Download the Makefile to the root of your project
+curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o /<path>/<to>/<project>/Makefile
+```
+
+## Usage
+
+After you've copied the Baka `Makefile` to your project root:
+
+Before we detail typical usage commands, the command `make venv` looks for two optional environment
+variables:
+
+- Set `BAKA_PYTHON` to point to your Python interpreter of choice. If this isn't set, Baka will use
+  the default `python3` on your `PATH`.
+- Set `BAKA_VENV_PREFIX` to a string that will prefix your shell prompt. If this isn't set, the
+  value defaults to the name of the parent directory to your project.
+
+Typical usage for new Baka users is as follows:
+
+- Run `make` (implies `make help`) to print help text.
+- If you're starting a _new_ project, run `make init` to create the virtual environment and a basic
+  `pyproject.toml`. You _must_ populate `pyproject.toml` with your project's metadata information
+  and dependencies.
+    - `make init` is a convenience that runs the `venv` and `pyproject` targets.
+- If you're adding Baka to an _existing_ project:
+  - If you already have a virtual environment, make sure `pip` is up to date, and make sure `wheel`
+    and `pip-tools` are installed. Otherwise, run `make venv`. Running it anyway will fail if an
+    existing `venv` folder exists next to the Baka `Makefile`.
+  - If you already have a `pyproject.toml`, make sure the metadata and dependencies are specified
+    according to [PEP 621][pep-621]. Running `make pyproject` will err if a pyproject.toml already
+    exists.
+- Once you've defined your dependencies, run `make lock` to generate lock files.
+    - The lock files will appear at `<project-root>/lock/[main|dev]`.
+- To _install_ your dependencies, run `make install`.
+    - This target installs dependencies defined in the _lock files_, not directly from
+      `pyproject.toml`.
+
+If you want to _add_ new dependencies to an existing project, running `make update` will update your
+venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and install based on
+the new lock. This target is a convenience that runs the `venv`, `lock`, and `install` targets, in
+that order.
+
+If you want to _remove_ dependencies, see [Removing Dependencies](#removing-dependencies).
+
 ## Outstanding Issues
 
-There are a few outstanding issues with this methodology (that probably won't get fixed):
+There are a few outstanding issues with this methodology (that probably won't get fixed).
 
-- `make` subshells the calls, so you can't activate the virtual environment with `make` in _your_
-  shell session. I have a shell alias that does it:
-  ```bash
-  alias act="source venv/bin/activate"
-  ```
-- Removing "root" dependencies from the `pyproject.toml` doesn't work with the Makefile easily, so
-  there isn't a target for that. After removing the dependency, you can do this manually:
-  ```bash
-  cd /path/to/your/project/
-  act # my alias for 'source venv/bin/activate'
-  python -m pip uninstall <removed package>
-  python -m pip check
-  make lock
-  ```
-  The alternative approach is to nuke the venv and build it from scratch, but that's painful when
-  the project is large (though made easier via `pip`'s wheel-caching feature):
-  ```bash
-  make refresh
-  ```
-- Baka doesn't work on Windows. `make` is generally not something you'd use on Windows, though I'm
-  sure I could accomplish a similar batch script to do this too. But I don't want to. Maybe
-  [NMake][nmake] is something we could explore in the future.
-- It would be nice if we could pass arguments to `make pyproject`, or optionally prompt the user for
-  values to fill in. But, dumping the file to the project root and manually editing it is fine for
-  now.
-    - `make` doesn't allow accepting arguments or options to targets because you can specify
-      multiple targets to run.
-    - We could make env vars that Baka could look for, but the syntax is backwards when passing
-      inline to `make` calls, and setting a `.env` file is functionally no different than editing
-      `pyproject.toml` manually after the template is generated.
+### Activating the Virtual Environment
+
+`make` subshells the calls, so you can't activate the virtual environment with `make` in _your_
+shell session. I have a shell alias that does it:
+
+```bash
+alias act="source venv/bin/activate"
+```
+
+### Removing Dependencies
+
+Removing "root" dependencies from the `pyproject.toml` doesn't work with the `Makefile` easily, so
+there isn't a target for that. After removing the dependency, you can do this manually, or use
+`make refresh` to rebuild the venv.
+
+Manual approach:
+
+```bash
+cd /path/to/your/project/
+act # my alias for 'source venv/bin/activate'
+python -m pip uninstall <removed package>
+python -m pip check
+make lock
+```
+
+The alternative approach is to nuke the venv and build it from scratch, but that's expensive,
+especially when the project is large (though made easier via `pip`'s wheel-caching feature):
+
+```bash
+make refresh
+```
+
+### Windows Usage
+
+Baka doesn't work on Windows. GNU Make (or POSIX Make for that matter) is generally not something
+you'd use on Windows, though I'm sure I could accomplish a similar batch script to do this too. But
+I don't want to. Maybe [NMake][nmake] is something we could explore in the future.
+
+### Passing Arguments
+
+It would be nice if we could pass arguments to `make pyproject`, or optionally prompt the user for
+values to fill in. But, dumping the file to the project root and manually editing it is fine for
+now.
+
+- `make` doesn't allow accepting arguments or options to targets because you can specify
+  multiple targets to run.
+- We could make env vars that Baka could look for, but the syntax is backwards when passing
+  inline to `make` calls, and setting a `.env` file is functionally no different than editing
+  `pyproject.toml` manually after the template is generated.
 
 [nmake]: https://learn.microsoft.com/en-us/cpp/build/reference/nmake-reference?view=msvc-170
 
-These are acceptable trade-offs for me. I don't often develop on Windows natively, and I typically
-nuke my venvs when uninstalling major dependencies anyway.
+### Reliance on GNU Make
+
+GNU Make is pretty wide spread nowadays, but it's not the most portable `make` out there. Down the
+road, we really ought to replace the convenience functions given by GNU Make with lower-level
+methods that will work with POSIX `make`.
+
+It might also be good to make a version that works with Microsoft NMake, to support Windows users.
