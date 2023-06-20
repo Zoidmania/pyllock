@@ -165,14 +165,9 @@ that order.
 
 If you want to _remove_ dependencies, see [Removing Dependencies](#removing-dependencies).
 
-## Outstanding Issues
-
-There are a few outstanding issues with this methodology (that probably won't get fixed).
-
-### Activating the Virtual Environment
-
-`make` subshells the calls, so you can't activate the virtual environment with `make` in _your_
-shell session. I have a shell alias that does it:
+**_Nota Bene_**: `make` subshells the calls, so you can't activate the virtual environment with
+`make` in _your_ shell session. I have a shell alias that does it (when run from the root of a
+project):
 
 ```bash
 alias act="source venv/bin/activate"
@@ -192,6 +187,7 @@ act # my alias for 'source venv/bin/activate'
 python -m pip uninstall <removed package>
 python -m pip check
 make lock
+make install
 ```
 
 The alternative approach is to nuke the venv and build it from scratch, but that's expensive,
@@ -200,31 +196,3 @@ especially when the project is large (though made easier via `pip`'s wheel-cachi
 ```bash
 make refresh
 ```
-
-### Windows Usage
-
-Baka doesn't work on Windows. GNU Make (or POSIX Make for that matter) is generally not something
-you'd use on Windows, though I'm sure I could accomplish a similar batch script to do this too. But
-I don't want to. Maybe [NMake][nmake] is something we could explore in the future.
-
-### Passing Arguments
-
-It would be nice if we could pass arguments to `make pyproject`, or optionally prompt the user for
-values to fill in. But, dumping the file to the project root and manually editing it is fine for
-now.
-
-- `make` doesn't allow accepting arguments or options to targets because you can specify
-  multiple targets to run.
-- We could make env vars that Baka could look for, but the syntax is backwards when passing
-  inline to `make` calls, and setting a `.env` file is functionally no different than editing
-  `pyproject.toml` manually after the template is generated.
-
-[nmake]: https://learn.microsoft.com/en-us/cpp/build/reference/nmake-reference?view=msvc-170
-
-### Reliance on GNU Make
-
-GNU Make is pretty wide spread nowadays, but it's not the most portable `make` out there. Down the
-road, we really ought to replace the convenience functions given by GNU Make with lower-level
-methods that will work with POSIX `make`.
-
-It might also be good to make a version that works with Microsoft NMake, to support Windows users.
