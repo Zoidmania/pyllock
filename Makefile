@@ -159,8 +159,8 @@ endif
 SP = " "
 
 define PYPROJECT_TOML
-# If any strings are left empty, `make lock` will fail.
-# To debug, run `pip install .` to emit errors.
+# If any strings are left empty, 'make lock' will fail.
+# To debug, run 'pip install .' to emit errors.
 [project]
 # Package names should follow PEP 423.
 name = \"\"
@@ -304,16 +304,10 @@ lock:
 	@$(shell mkdir -p $(REQS))
 
 	@echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"
-	@if [ -f $(REQS)/main ]; then \
-		mv $(REQS)/main $(REQS)/main.bak; \
-	fi
 	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking \
 		-o $(REQS)/main $(BASEDIR)/pyproject.toml
 
 	@echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"
-	@if [ -f $(REQS)/dev ]; then \
-		mv $(REQS)/dev $(REQS)/dev.bak; \
-	fi
 	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking \
 		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
 
@@ -347,8 +341,3 @@ venv:
 
 	@echo "$P $(BD_WHITE)Installing pip-tools and wheel...$(RESET)"
 	@$(VENV) -m pip install --upgrade pip-tools wheel
-	@if [ ! -d $(REQS) ]; then \
-		mkdir -p $(REQS); \
-		touch $(REQS)/main; \
-		touch $(REQS)/dev; \
-	fi
