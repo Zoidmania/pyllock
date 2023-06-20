@@ -335,7 +335,7 @@ refresh: clean update
 sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
-	@if [ "$(BAKA_ENV)" = "main" ]; then \
+	@if [ "$(BAKA_ENV)" = "main" ] || [ "$(BAKA_ENV)" = "prod" ]; then \
 		$(VENV) -m piptools sync $(REQS)/main; \
 		$(VENV) -m pip check; \
 	elif [ "$(BAKA_ENV)" = "dev" ]; then \

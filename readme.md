@@ -122,9 +122,11 @@ file for you to get started). Namely:
 Simple:
 
 ```bash
-# Download the Makefile to the root of your project
-curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o /<path>/<to>/<project>/Makefile
+# Download the Makefile
+curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o Makefile
 ```
+
+Place the `Makefile` at the root of your project.
 
 ## Usage
 
@@ -170,3 +172,12 @@ project):
 ```bash
 alias act="source venv/bin/activate"
 ```
+
+### Production
+
+In production, you don't want to install your development-only dependencies. That's why we maintain
+separate `main` and `dev` lock files.
+
+To ensure that `make sync` (a.k.a. `make install`) only installs the main dependencies, set the
+environment variable `BAKA_ENV` to `"main"` or `"prod"`. If unset, Baka will default to `"dev"`,
+which will install the `dev` lock file.
