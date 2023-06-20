@@ -138,21 +138,7 @@ RESET := \033[0m
 # When creating a macro , even if it'll be passed to 'echo' later, you _should_ add quotes.
 P := "'$(BD_GREEN)'['$(WHITE)'Baka'$(BD_GREEN)']'$(RESET)'"
 
-## Directory and Env Helpers
-
-BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
-VENV := $(BASEDIR)/venv/bin/python
-REQS := $(BASEDIR)/lock
-
-ifndef BAKA_PYTHON
-BAKA_PYTHON := /usr/bin/env python3
-endif
-
-ifndef BAKA_VENV_PREFIX
-BAKA_VENV_PREFIX := "$(shell basename $(BASEDIR))"
-endif
-
-## pyproject.toml Template
+## Templates
 
 # It's possible to preserve leading spaces by making a variable and inserting a reference at
 # the beginning. Bad, but I don't know of a way around this.
@@ -237,6 +223,11 @@ ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) an
 ${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to
 ${SP}${SP}${SP}${SP}avoid turd dependencies.
 
+$(BD_GREEN)sync$(RESET)
+${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any
+${SP}${SP}${SP}${SP}new dependencies will be installed, and any removed dependencies will be
+${SP}${SP}${SP}${SP}uninstalled.
+
 $(BD_GREEN)update$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)install$(RESET), in that order.
 ${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or
@@ -271,6 +262,24 @@ You $(BD_UL_IT_STD)must$(RESET) specify your project's dependencies according to
 development dependencies should be specified in a list called $(BD_MAGENTA)dev$(RESET) in the
 $(BD_MAGENTA)[project.optional-dependencies]$(RESET) section.
 endef
+
+## Directory and Env Helpers
+
+BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+VENV := $(BASEDIR)/venv/bin/python
+REQS := $(BASEDIR)/lock
+
+ifndef BAKA_PYTHON
+BAKA_PYTHON := /usr/bin/env python3
+endif
+
+ifndef BAKA_VENV_PREFIX
+BAKA_VENV_PREFIX := "$(shell basename $(BASEDIR))"
+endif
+
+ifndef BAKA_ENV
+BAKA_ENV := dev
+endif
 
 ## Targets
 
@@ -324,8 +333,20 @@ pyproject:
 .PHONY: refresh
 refresh: clean update
 
+.PHONY: sync
+sync:
+	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
+
+	@if [ "$(BAKA_ENV)" = "main" ]; then \
+		$(VENV) -m piptools sync $(REQS)/main; \
+	elif [ "$(BAKA_ENV)" = "dev" ]; then \
+		$(VENV) -m piptools sync $(REQS)/dev; \
+	else \
+		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)BAKA_ENV$(RESET): $(BAKA_ENV)"; \
+	fi
+
 .PHONY: update
-update: venv lock install
+update: venv lock sync
 
 .PHONY: venv
 venv:
@@ -339,5 +360,5 @@ venv:
 	@echo "$P $(BD_WHITE)Upgrading pip...$(RESET)"
 	@$(VENV) -m pip install --upgrade pip
 
-	@echo "$P $(BD_WHITE)Installing pip-tools and wheel...$(RESET)"
+	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
 	@$(VENV) -m pip install --upgrade pip-tools wheel
