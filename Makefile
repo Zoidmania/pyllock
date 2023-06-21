@@ -218,8 +218,8 @@ ${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from th
 ${SP}${SP}${SP}${SP}the project.
 
 $(BD_GREEN)refresh$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order. Suitable
-${SP}${SP}${SP}${SP}for running after $(BD_UL_IT_STD)removing$(RESET) dependencies to avoid turd dependencies.
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order. Use to
+${SP}${SP}${SP}${SP}completely rebuild a virtual environment.
 
 $(BD_GREEN)sync$(RESET)
 ${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any new
@@ -231,8 +231,7 @@ ${SP}${SP}${SP}${SP}$(BD_STD)'main'$(RESET) or $(BD_STD)'dev'$(RESET) to select 
 
 $(BD_GREEN)update$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
-${SP}${SP}${SP}${SP}Suitable for running after $(BD_UL_IT_STD)adding$(RESET) new dependencies, or updating versions
-${SP}${SP}${SP}${SP}of your current dependencies.
+${SP}${SP}${SP}${SP}Suitable for running after adding, removing, or updating dependencies.
 
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
