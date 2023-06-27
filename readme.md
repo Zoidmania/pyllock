@@ -133,10 +133,12 @@ Place the `Makefile` at the root of your project.
 After you've copied the Baka `Makefile` to your project root:
 
 1. Run `make` (implies `make help`) to print help text.
-1. If you don't have a virtual environment in a folder called `venv`, create one with `make venv`.
+1. If you don't have a virtual environment in a folder called `venv` at the root of your project,
+   create one with `make venv`.
+    - See [Optional Environment Variables](#optional-environment-variables) for options.
 1. If you already have a `pyproject.toml`, make sure the metadata and dependencies are specified
-  according to [PEP 621][pep-621]. If not, run `make pyproject` to create a boilerplate
-  `pyproject.toml` that you can fill out.
+   according to [PEP 621][pep-621]. If not, run `make pyproject` to create a boilerplate
+   `pyproject.toml` that you can fill out.
 1. Once you've defined your dependencies, run `make lock` to generate lock files.
     - The lock files will appear at `<project-root>/lock/[main|dev]`.
 1. To _install_ your dependencies, run `make install` (or the alias `make sync`).
