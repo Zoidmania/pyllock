@@ -4,8 +4,8 @@
 ![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Baka)
 
 On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
-[`pip-tools`][pip-tools] to manage my Python projects these days (on Linux and Mac at least). I've
-workshopped this process into an informal standard that I'm now calling Baka. Baka will:
+[`pip-tools`][pip-tools] to manage my Python projects these days. I've workshopped this process into
+an informal standard that I'm now calling Baka. Baka will:
 
 [pip-tools]: https://github.com/jazzband/pip-tools/
 
@@ -132,38 +132,41 @@ Place the `Makefile` at the root of your project.
 
 After you've copied the Baka `Makefile` to your project root:
 
-Before we detail typical usage commands, the command `make venv` looks for two optional environment
-variables:
+1. Run `make` (implies `make help`) to print help text.
+1. If you don't have a virtual environment in a folder called `venv` at the root of your project,
+   create one with `make venv`.
+    - See [Optional Environment Variables](#optional-environment-variables) for options.
+1. If you already have a `pyproject.toml`, make sure the metadata and dependencies are specified
+   according to [PEP 621][pep-621]. If not, run `make pyproject` to create a boilerplate
+   `pyproject.toml` that you can fill out.
+1. Once you've defined your dependencies, run `make lock` to generate lock files.
+    - The lock files will appear at `<project-root>/lock/[main|dev]`.
+1. To _install_ your dependencies, run `make install` (or the alias `make sync`).
+    - This target installs dependencies defined in the _lock files_, not directly from
+      `pyproject.toml`.
+
+Note: `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
+starting brand new projects.
+
+If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
+will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
+install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
+targets, in that order.
+
+### Optional Environment Variables
+
+The command `make venv` looks for two optional environment variables:
 
 - Set `BAKA_PYTHON` to point to your Python interpreter of choice. If this isn't set, Baka will use
   the default `python3` on your `PATH`.
 - Set `BAKA_VENV_PREFIX` to a string that will prefix your shell prompt. If this isn't set, the
   value defaults to the name of the parent directory to your project.
 
-Typical usage for new Baka users is as follows:
+The command `make sync` (a.k.a. `make install`) looks for `BAKA_ENV` to determine whether this is a
+production ("main") or development ("dev") environment, defaulting to "dev" if unset. See
+[Production](#production) for more details.
 
-- Run `make` (implies `make help`) to print help text.
-- If you're starting a _new_ project, run `make init` to create the virtual environment and a basic
-  `pyproject.toml`. You _must_ populate `pyproject.toml` with your project's metadata information
-  and dependencies.
-    - `make init` is a convenience that runs the `venv` and `pyproject` targets.
-- If you're adding Baka to an _existing_ project:
-  - If you already have a virtual environment, make sure `pip` is up to date, and make sure `wheel`
-    and `pip-tools` are installed. Otherwise, run `make venv`. Running it anyway will fail if an
-    existing `venv` folder exists next to the Baka `Makefile`.
-  - If you already have a `pyproject.toml`, make sure the metadata and dependencies are specified
-    according to [PEP 621][pep-621]. Running `make pyproject` will err if a pyproject.toml already
-    exists.
-- Once you've defined your dependencies, run `make lock` to generate lock files.
-    - The lock files will appear at `<project-root>/lock/[main|dev]`.
-- To _install_ your dependencies, run `make install`.
-    - This target installs dependencies defined in the _lock files_, not directly from
-      `pyproject.toml`.
-
-If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
-will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
-install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
-targets, in that order.
+### Activate Your Virtual Environment
 
 **_Nota Bene_**: `make` subshells the calls, so you can't activate the virtual environment with
 `make` in _your_ shell session. I have a shell alias that does it (when run from the root of a
