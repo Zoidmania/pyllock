@@ -287,7 +287,7 @@ endif
 init: venv pyproject
 
 .PHONY: install
-init: sync
+install: sync
 
 .PHONY: clean
 clean:
