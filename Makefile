@@ -292,7 +292,7 @@ install: sync
 .PHONY: clean
 clean:
 	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
-	@rm -rf $(BASEDIR)/*.egg-info
+	@find $(BASEDIR) -type d -name '*.egg-info' -exec rm -rf {} +
 
 	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
 	@rm -rf $(BASEDIR)/venv
