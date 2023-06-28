@@ -1,6 +1,6 @@
 #################
 # Baka Makefile
-# v0.3.3
+# v0.4.0
 #
 # For more details, see https://github.com/Zoidmania/baka.
 #
