@@ -86,6 +86,7 @@ Baka only works in Linux and Unix environments. It's designed for use with Bash,
 tested with other shells. It also expects the following programs are available:
 
 - `echo`
+- `find`
 - `mkdir`
 - `mv`
 - `rm`
