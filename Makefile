@@ -1,6 +1,6 @@
 #################
 # Baka Makefile
-# v0.4.1
+# v0.4.2
 #
 # For more details, see https://github.com/Zoidmania/baka.
 #
@@ -172,6 +172,20 @@ dev = [
 
 [project.urls]
 Repository = \"\"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+# https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+[tool.setuptools.packages.find]
+where = []
+include = []
+exclude = []
+namespaces = true # true by default
 endef
 
 define HELP
