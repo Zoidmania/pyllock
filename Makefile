@@ -314,10 +314,10 @@ clean:
 	@echo "$P $(BD_YELLOW)Removing lock files...$(RESET)"
 	@rm -rf $(BASEDIR)/lock
 
-# 	@echo "$P $(BD_YELLOW)Removing dist builds...$(RESET)"
-# 	@if [ -d $(BASEDIR)/dist ]; then \
-# 		rm $(BASEDIR)/dist/*; \
-# 	fi
+	@echo "$P $(BD_YELLOW)Removing dist builds...$(RESET)"
+	@if [ -d $(BASEDIR)/dist ]; then \
+		rm -rf $(BASEDIR)/dist; \
+	fi
 
 .PHONY: help
 help:
