@@ -33,6 +33,11 @@
 # See: https://www.gnu.org/software/make/manual/html_node/One-Shell.html
 .ONESHELL:
 
+# Force serial execution. All of these recipes are intended to run serially; parellel execution
+# could fail.
+# See: https://www.gnu.org/software/make/manual/html_node/Parallel-Disable.html
+.NOTPARALLEL:
+
 # Set a default target. In this case, print help text.
 .DEFAULT_GOAL := help
 
@@ -188,6 +193,7 @@ exclude = []
 namespaces = true # true by default
 endef
 
+# All of the spacing is designed to make the help text readable on a 80-column-width console.
 define HELP
 $(BD_BLUE)#$(RESET) $(BD_STD)Baka ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
 
@@ -212,7 +218,12 @@ ${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
 The following commands are available.
 
 $(BD_GREEN)clean$(RESET)
-${SP}${SP}${SP}${SP}Deletes the project's virtual environment, and any $(BD_IT_BLUE).egg-info$(RESET) metadata.
+${SP}${SP}${SP}${SP}Deletes the project's virtual environment, any $(BD_IT_BLUE).egg-info$(RESET) metadata, and
+${SP}${SP}${SP}${SP}build artifacts.
+
+$(BD_GREEN)clean-build$(RESET)
+${SP}${SP}${SP}${SP}Deletes any $(BD_IT_BLUE).egg-info$(RESET)'s, as well as the project's build artifacts by
+${SP}${SP}${SP}${SP}removing the 'dist/' directory.
 
 $(BD_GREEN)help$(RESET)
 ${SP}${SP}${SP}${SP}Prints this help text and exits. Default command.
@@ -300,16 +311,21 @@ endif
 
 ## Targets
 
+.PHONY: build
+build:
+	@$(VENV) -m build
+
 .PHONY: clean
 clean:
-	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
-	@find $(BASEDIR) -type d -name '*.egg-info' -exec rm -rf {} +
-
 	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
 	@rm -rf $(BASEDIR)/venv
 
-	@echo "$P $(BD_YELLOW)Removing lock files...$(RESET)"
-	@rm -rf $(BASEDIR)/lock
+	$(MAKE) -s clean-build
+
+.PHONY: clean-build
+clean-build:
+	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
+	@find $(BASEDIR) -type d -name '*.egg-info' -exec rm -rf {} +
 
 	@echo "$P $(BD_YELLOW)Removing dist builds...$(RESET)"
 	@if [ -d $(BASEDIR)/dist ]; then \
@@ -318,7 +334,6 @@ clean:
 
 .PHONY: help
 help:
-	@# All of the spacing is designed to make the help text readable on a 80-column-width console.
 	@echo "$(HELP)"
 
 .PHONY: init

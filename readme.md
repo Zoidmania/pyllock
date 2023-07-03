@@ -156,6 +156,10 @@ will update your venv's base dependencies (`pip-tools` and `wheel`), lock the ne
 install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
 targets, in that order.
 
+### Parallel Excution
+
+Baka's recipes are inteded to be run _serially_. Parallel execution is disabled.
+
 ### Optional Environment Variables
 
 The command `make venv` looks for two optional environment variables:
