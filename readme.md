@@ -85,6 +85,8 @@ to generate its lock files.
 Baka only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
 tested with other shells. It also expects the following programs are available:
 
+- `awk`
+- `curl`
 - `echo`
 - `find`
 - `mkdir`
@@ -153,6 +155,10 @@ If you want to _add_ or _remove_ dependencies to or from an existing project, ru
 will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
 install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
 targets, in that order.
+
+### Parallel Excution
+
+Baka's recipes are inteded to be run _serially_. Parallel execution is disabled.
 
 ### Optional Environment Variables
 

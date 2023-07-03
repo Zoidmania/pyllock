@@ -1,6 +1,6 @@
 #################
 # Baka Makefile
-# v0.4.2
+# v0.4.3
 #
 # For more details, see https://github.com/Zoidmania/baka.
 #
@@ -29,9 +29,14 @@
 
 ## Configs
 
-# For performance reasons, we do this in one subshell.
+# For performance reasons and to make intermediate env vars "persistent", we use one subshell.
 # See: https://www.gnu.org/software/make/manual/html_node/One-Shell.html
 .ONESHELL:
+
+# Force serial execution. All of these recipes are intended to run serially; parellel execution
+# could fail.
+# See: https://www.gnu.org/software/make/manual/html_node/Parallel-Disable.html
+.NOTPARALLEL:
 
 # Set a default target. In this case, print help text.
 .DEFAULT_GOAL := help
@@ -188,6 +193,7 @@ exclude = []
 namespaces = true # true by default
 endef
 
+# All of the spacing is designed to make the help text readable on a 80-column-width console.
 define HELP
 $(BD_BLUE)#$(RESET) $(BD_STD)Baka ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
 
@@ -212,7 +218,12 @@ ${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
 The following commands are available.
 
 $(BD_GREEN)clean$(RESET)
-${SP}${SP}${SP}${SP}Deletes the project's virtual environment, and any $(BD_IT_BLUE).egg-info$(RESET) metadata.
+${SP}${SP}${SP}${SP}Deletes the project's virtual environment, any $(BD_IT_BLUE).egg-info$(RESET) metadata, and
+${SP}${SP}${SP}${SP}build artifacts.
+
+$(BD_GREEN)clean-build$(RESET)
+${SP}${SP}${SP}${SP}Deletes any $(BD_IT_BLUE).egg-info$(RESET)'s, as well as the project's build artifacts by
+${SP}${SP}${SP}${SP}removing the 'dist/' directory.
 
 $(BD_GREEN)help$(RESET)
 ${SP}${SP}${SP}${SP}Prints this help text and exits. Default command.
@@ -246,6 +257,9 @@ ${SP}${SP}${SP}${SP}$(BD_STD)'main'$(RESET) or $(BD_STD)'dev'$(RESET) to select 
 $(BD_GREEN)update$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
 ${SP}${SP}${SP}${SP}Suitable for running after adding, removing, or updating dependencies.
+
+$(BD_GREEN)upgrade-baka$(RESET)
+${SP}${SP}${SP}${SP}Updates Baka to the latest release version.
 
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
@@ -297,27 +311,36 @@ endif
 
 ## Targets
 
+.PHONY: build
+build:
+	@$(VENV) -m build
+
+.PHONY: clean
+clean:
+	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
+	@rm -rf $(BASEDIR)/venv
+
+	$(MAKE) -s clean-build
+
+.PHONY: clean-build
+clean-build:
+	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
+	@find $(BASEDIR) -type d -name '*.egg-info' -exec rm -rf {} +
+
+	@echo "$P $(BD_YELLOW)Removing dist builds...$(RESET)"
+	@if [ -d $(BASEDIR)/dist ]; then \
+		rm -rf $(BASEDIR)/dist; \
+	fi
+
+.PHONY: help
+help:
+	@echo "$(HELP)"
+
 .PHONY: init
 init: venv pyproject
 
 .PHONY: install
 install: sync
-
-.PHONY: clean
-clean:
-	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
-	@find $(BASEDIR) -type d -name '*.egg-info' -exec rm -rf {} +
-
-	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
-	@rm -rf $(BASEDIR)/venv
-
-	@echo "$P $(BD_YELLOW)Removing lock files...$(RESET)"
-	@rm -rf $(BASEDIR)/lock
-
-.PHONY: help
-help:
-	@# All of the spacing is designed to make the help text readable on a 80-column-width console.
-	@echo "$(HELP)"
 
 .PHONY: lock
 lock:
@@ -349,10 +372,10 @@ sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
 	@if [ "$(BAKA_ENV)" = "main" ] || [ "$(BAKA_ENV)" = "prod" ]; then \
-		$(VENV) -m piptools sync $(REQS)/main; \
+		$(VENV) -m piptools sync $(REQS)/main --pip-args "-e $(BASEDIR)"; \
 		$(VENV) -m pip check; \
 	elif [ "$(BAKA_ENV)" = "dev" ]; then \
-		$(VENV) -m piptools sync $(REQS)/dev; \
+		$(VENV) -m piptools sync $(REQS)/dev --pip-args "-e $(BASEDIR)"; \
 		$(VENV) -m pip check; \
 	else \
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)BAKA_ENV$(RESET): $(BAKA_ENV)"; \
@@ -360,6 +383,12 @@ sync:
 
 .PHONY: update
 update: venv lock sync
+
+.PHONY: upgrade-baka
+update-baka:
+	@echo "$P $(BD_WHITE)Upgrading Baka to latest release...$(RESET)"
+	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/baka/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
+	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/baka/$(LATEST)/Makefile
 
 .PHONY: venv
 venv:
