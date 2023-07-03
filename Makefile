@@ -1,6 +1,6 @@
 #################
 # Baka Makefile
-# v0.4.2
+# v0.4.3
 #
 # For more details, see https://github.com/Zoidmania/baka.
 #
@@ -29,7 +29,7 @@
 
 ## Configs
 
-# For performance reasons, we do this in one subshell.
+# For performance reasons and to make intermediate env vars "persistent", we use one subshell.
 # See: https://www.gnu.org/software/make/manual/html_node/One-Shell.html
 .ONESHELL:
 
@@ -314,6 +314,11 @@ clean:
 	@echo "$P $(BD_YELLOW)Removing lock files...$(RESET)"
 	@rm -rf $(BASEDIR)/lock
 
+# 	@echo "$P $(BD_YELLOW)Removing dist builds...$(RESET)"
+# 	@if [ -d $(BASEDIR)/dist ]; then \
+# 		rm $(BASEDIR)/dist/*; \
+# 	fi
+
 .PHONY: help
 help:
 	@# All of the spacing is designed to make the help text readable on a 80-column-width console.
@@ -349,10 +354,10 @@ sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
 	@if [ "$(BAKA_ENV)" = "main" ] || [ "$(BAKA_ENV)" = "prod" ]; then \
-		$(VENV) -m piptools sync $(REQS)/main; \
+		$(VENV) -m piptools sync $(REQS)/main --pip-args "-e $(BASEDIR)"; \
 		$(VENV) -m pip check; \
 	elif [ "$(BAKA_ENV)" = "dev" ]; then \
-		$(VENV) -m piptools sync $(REQS)/dev; \
+		$(VENV) -m piptools sync $(REQS)/dev --pip-args "-e $(BASEDIR)"; \
 		$(VENV) -m pip check; \
 	else \
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)BAKA_ENV$(RESET): $(BAKA_ENV)"; \
@@ -360,6 +365,12 @@ sync:
 
 .PHONY: update
 update: venv lock sync
+
+.PHONY: update-baka
+update-baka:
+	@echo "$P $(BD_WHITE)Upgrading Baka to latest release...$(RESET)"
+	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/baka/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
+	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/baka/$(LATEST)/Makefile
 
 .PHONY: venv
 venv:

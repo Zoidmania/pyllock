@@ -85,6 +85,8 @@ to generate its lock files.
 Baka only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
 tested with other shells. It also expects the following programs are available:
 
+- `awk`
+- `curl`
 - `echo`
 - `find`
 - `mkdir`
