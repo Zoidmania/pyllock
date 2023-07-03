@@ -247,6 +247,9 @@ $(BD_GREEN)update$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
 ${SP}${SP}${SP}${SP}Suitable for running after adding, removing, or updating dependencies.
 
+$(BD_GREEN)upgrade-baka$(RESET)
+${SP}${SP}${SP}${SP}Updates Baka to the latest release version.
+
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
 ${SP}${SP}${SP}${SP}interpreter specified by $(IT_ORANGE)BAKA_PYTHON$(RESET), or the default interpreter on the
@@ -297,12 +300,6 @@ endif
 
 ## Targets
 
-.PHONY: init
-init: venv pyproject
-
-.PHONY: install
-install: sync
-
 .PHONY: clean
 clean:
 	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
@@ -323,6 +320,12 @@ clean:
 help:
 	@# All of the spacing is designed to make the help text readable on a 80-column-width console.
 	@echo "$(HELP)"
+
+.PHONY: init
+init: venv pyproject
+
+.PHONY: install
+install: sync
 
 .PHONY: lock
 lock:
@@ -366,7 +369,7 @@ sync:
 .PHONY: update
 update: venv lock sync
 
-.PHONY: update-baka
+.PHONY: upgrade-baka
 update-baka:
 	@echo "$P $(BD_WHITE)Upgrading Baka to latest release...$(RESET)"
 	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/baka/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
