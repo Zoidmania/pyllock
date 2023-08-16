@@ -1,11 +1,11 @@
-# Baka ¯\\\_(ツ)_/¯
+# Pyllock ¯\\\_(ツ)_/¯
 
-![GitHub](https://img.shields.io/github/license/Zoidmania/baka)
-![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Baka)
+![GitHub](https://img.shields.io/github/license/Zoidmania/pyllock)
+![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Pyllock)
 
 On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
 [`pip-tools`][pip-tools] to manage my Python projects these days. I've workshopped this process into
-an informal standard that I'm now calling Baka. Baka will:
+an informal standard that I'm now calling Pyllock. Pyllock will:
 
 [pip-tools]: https://github.com/jazzband/pip-tools/
 
@@ -18,7 +18,7 @@ New developers to existing projects can bootstrap their environments with ease u
 
 Add the dependencies you want in `pyproject.toml`, and pin the versions using `pip-tools` in a
 `requirements.txt`-style lock file. `pip-tools` creates a temporary virtual environment whenever a
-new lockfile is created, so you don't have to worry about poisoning your venv. Using Baka, devs can
+new lockfile is created, so you don't have to worry about poisoning your venv. Using Pyllock, devs can
 generate new lockfiles and update their local env using `make update`.
 
 Note that this methodology generates all of the main dependencies in the both the `main` and `dev`,
@@ -77,12 +77,12 @@ Since `pip` still doesn't have a good way to do this, my original inclination wa
 
 This is where `pip-tools` comes in, a package that allows developers to "compile" requirements in a
 temporary, isolated virtual environment without messing with your development env, in addition to
-labeling and ordering the dependencies in a sensible manner. Baka uses this feature of `pip-tools`
+labeling and ordering the dependencies in a sensible manner. Pyllock uses this feature of `pip-tools`
 to generate its lock files.
 
 ## Requirements
 
-Baka only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
+Pyllock only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
 tested with other shells. It also expects the following programs are available:
 
 - `awk`
@@ -95,14 +95,14 @@ tested with other shells. It also expects the following programs are available:
 - `touch`
 - GNU `make`
     - Tested with GNU Make 4.3.
-    - Doesn't work with "standard" `make`. Baka relies on features of GNU Make.
+    - Doesn't work with "standard" `make`. Pyllock relies on features of GNU Make.
 - `python3`
     - You need to have Python available to create the virtual environment. Any version of Python
       that includes the `venv` module (**introduced in Python 3.3**) will work. The initial Python
       instance used to create your project's virtual environment **will not be modified**; only the
       project's virtual environment will be modified.
     - To specify a Python interpreter that isn't the default one on your `$PATH`, set the
-      environment variable `BAKA_PYTHON` to the interpreter of your choice. This variable is only
+      environment variable `PYLLOCK_PYTHON` to the interpreter of your choice. This variable is only
       used to create the venv.
 
 In addition, your Python project must specify its dependencies in a `pyproject.toml` file, rather
@@ -126,14 +126,14 @@ Simple:
 
 ```bash
 # Download the Makefile
-curl https://raw.githubusercontent.com/Zoidmania/baka/main/Makefile -o Makefile
+curl https://raw.githubusercontent.com/Zoidmania/pyllock/main/Makefile -o Makefile
 ```
 
 Place the `Makefile` at the root of your project.
 
 ## Usage
 
-After you've copied the Baka `Makefile` to your project root:
+After you've copied the Pyllock `Makefile` to your project root:
 
 1. Run `make` (implies `make help`) to print help text.
 1. If you don't have a virtual environment in a folder called `venv` at the root of your project,
@@ -158,19 +158,19 @@ targets, in that order.
 
 ### Parallel Excution
 
-Baka's recipes are inteded to be run _serially_. Parallel execution is disabled.
+Pyllock's recipes are inteded to be run _serially_. Parallel execution is disabled.
 
 ### Optional Environment Variables
 
 The command `make venv` looks for two optional environment variables:
 
-- Set `BAKA_PYTHON` to point to your Python interpreter of choice. If this isn't set, Baka will use
-  the default `python3` on your `PATH`.
-- Set `BAKA_VENV_PREFIX` to a string that will prefix your shell prompt. If this isn't set, the
+- Set `PYLLOCK_PYTHON` to point to your Python interpreter of choice. If this isn't set, Pyllock
+  will use the default `python3` on your `PATH`.
+- Set `PYLLOCK_VENV_PREFIX` to a string that will prefix your shell prompt. If this isn't set, the
   value defaults to the name of the parent directory to your project.
 
-The command `make sync` (a.k.a. `make install`) looks for `BAKA_ENV` to determine whether this is a
-production ("main") or development ("dev") environment, defaulting to "dev" if unset. See
+The command `make sync` (a.k.a. `make install`) looks for `PYLLOCK_ENV` to determine whether this is
+a production ("main") or development ("dev") environment, defaulting to "dev" if unset. See
 [Production](#production) for more details.
 
 ### Activate Your Virtual Environment
@@ -189,5 +189,5 @@ In production, you don't want to install your development-only dependencies. Tha
 separate `main` and `dev` lock files.
 
 To ensure that `make sync` (a.k.a. `make install`) only installs the main dependencies, set the
-environment variable `BAKA_ENV` to `"main"` or `"prod"`. If unset, Baka will default to `"dev"`,
-which will install the `dev` lock file.
+environment variable `PYLLOCK_ENV` to `"main"` or `"prod"`. If unset, Pyllock will default to
+`"dev"`, which will install the `dev` lock file.

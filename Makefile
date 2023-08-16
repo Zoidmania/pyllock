@@ -1,8 +1,8 @@
 #################
-# Baka Makefile
+# Pyllock Makefile
 # v0.5.0
 #
-# For more details, see https://github.com/Zoidmania/baka.
+# For more details, see https://github.com/Zoidmania/pyllock.
 #
 # MIT License
 #
@@ -141,7 +141,7 @@ RESET := \033[0m
 
 # Prefix Macro
 # When creating a macro , even if it'll be passed to 'echo' later, you _should_ add quotes.
-P := "'$(BD_GREEN)'['$(WHITE)'Baka'$(BD_GREEN)']'$(RESET)'"
+P := "'$(BD_GREEN)'['$(WHITE)'Pyllock'$(BD_GREEN)']'$(RESET)'"
 
 ## Templates
 
@@ -195,11 +195,11 @@ endef
 
 # All of the spacing is designed to make the help text readable on a 80-column-width console.
 define HELP
-$(BD_BLUE)#$(RESET) $(BD_STD)Baka ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
+$(BD_BLUE)#$(RESET) $(BD_STD)Pyllock ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
 
 \"The Stupid Python Project Manager.\"
 
-For more details, see $(UL_BLUE)https://github.com/Zoidmania/baka$(RESET).
+For more details, see $(UL_BLUE)https://github.com/Zoidmania/pyllock$(RESET).
 
 This manager creates virtual environments for your Python project and manages
 them with a standard virtual environment and minimal tooling. It $(BD_UL_IT_STD)does not$(RESET)
@@ -251,34 +251,34 @@ ${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environ
 ${SP}${SP}${SP}${SP}dependencies will be installed, and any removed dependencies will be
 ${SP}${SP}${SP}${SP}uninstalled.
 
-${SP}${SP}${SP}${SP}By default, $(BD_UL_IT_STD)development$(RESET) dependencies are synced. Set $(IT_ORANGE)BAKA_ENV$(RESET) to either
+${SP}${SP}${SP}${SP}By default, $(BD_UL_IT_STD)development$(RESET) dependencies are synced. Set $(IT_ORANGE)PYLLOCK_ENV$(RESET) to either
 ${SP}${SP}${SP}${SP}$(BD_STD)'main'$(RESET) or $(BD_STD)'dev'$(RESET) to select between the two available dependency lists.
 
 $(BD_GREEN)update$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
 ${SP}${SP}${SP}${SP}Suitable for running after adding, removing, or updating dependencies.
 
-$(BD_GREEN)upgrade-baka$(RESET)
-${SP}${SP}${SP}${SP}Updates Baka to the latest release version.
+$(BD_GREEN)upgrade-pyllock$(RESET)
+${SP}${SP}${SP}${SP}Updates Pyllock to the latest release version.
 
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
-${SP}${SP}${SP}${SP}interpreter specified by $(IT_ORANGE)BAKA_PYTHON$(RESET), or the default interpreter on the
+${SP}${SP}${SP}${SP}interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the default interpreter on the
 ${SP}${SP}${SP}${SP}$(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary
-${SP}${SP}${SP}${SP}dependencies of Baka. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one already
+${SP}${SP}${SP}${SP}dependencies of Pyllock. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one already
 ${SP}${SP}${SP}${SP}exists.
 
 ${SP}${SP}${SP}${SP}By default, the venv's prefix is the name of the parent directory of the
-${SP}${SP}${SP}${SP}project directory. This can be overridden by setting $(IT_ORANGE)BAKA_VENV_PREFIX$(RESET).
+${SP}${SP}${SP}${SP}project directory. This can be overridden by setting $(IT_ORANGE)PYLLOCK_VENV_PREFIX$(RESET).
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Getting Started$(RESET) $(BD_BLUE)##$(RESET)
 
 You $(BD_UL_IT_STD)must$(RESET) choose a Python interpreter to use for initializing the virtual
-environment (venv). Set the environment variable $(IT_ORANGE)BAKA_PYTHON$(RESET) to the your
+environment (venv). Set the environment variable $(IT_ORANGE)PYLLOCK_PYTHON$(RESET) to the your
 interpreter of choice, otherwise the default Python interpreter on $(IT_ORANGE)PATH$(RESET) is used.
 The interpreter specified with this variable is $(BD_UL_STD)only used to$(RESET) $(BD_UL_STD)create the venv$(RESET).
 
-To get started, place the Baka $(BD_IT_BLUE)Makefile$(RESET) in the root of your project. Then,
+To get started, place the Pyllock $(BD_IT_BLUE)Makefile$(RESET) in the root of your project. Then,
 $(BD_UL_IT_STD)remove any existing venvs from your project$(RESET).
 
 To start managing a project, simply run the following and begin tracking your
@@ -297,16 +297,16 @@ BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 VENV := $(BASEDIR)/venv/bin/python
 REQS := $(BASEDIR)/lock
 
-ifndef BAKA_PYTHON
-BAKA_PYTHON := /usr/bin/env python3
+ifndef PYLLOCK_PYTHON
+PYLLOCK_PYTHON := /usr/bin/env python3
 endif
 
-ifndef BAKA_VENV_PREFIX
-BAKA_VENV_PREFIX := "$(shell basename $(BASEDIR))"
+ifndef PYLLOCK_VENV_PREFIX
+PYLLOCK_VENV_PREFIX := "$(shell basename $(BASEDIR))"
 endif
 
-ifndef BAKA_ENV
-BAKA_ENV := dev
+ifndef PYLLOCK_ENV
+PYLLOCK_ENV := dev
 endif
 
 ## Targets
@@ -371,24 +371,24 @@ refresh: clean update
 sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
-	@if [ "$(BAKA_ENV)" = "main" ] || [ "$(BAKA_ENV)" = "prod" ]; then \
+	@if [ "$(PYLLOCK_ENV)" = "main" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
 		$(VENV) -m piptools sync $(REQS)/main --pip-args "-e $(BASEDIR)"; \
 		$(VENV) -m pip check; \
-	elif [ "$(BAKA_ENV)" = "dev" ]; then \
+	elif [ "$(PYLLOCK_ENV)" = "dev" ]; then \
 		$(VENV) -m piptools sync $(REQS)/dev --pip-args "-e $(BASEDIR)"; \
 		$(VENV) -m pip check; \
 	else \
-		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)BAKA_ENV$(RESET): $(BAKA_ENV)"; \
+		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
 	fi
 
 .PHONY: update
 update: venv lock sync
 
-.PHONY: upgrade-baka
-update-baka:
-	@echo "$P $(BD_WHITE)Upgrading Baka to latest release...$(RESET)"
-	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/baka/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
-	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/baka/$(LATEST)/Makefile
+.PHONY: upgrade-pyllock
+update-pyllock:
+	@echo "$P $(BD_WHITE)Upgrading Pyllock to latest release...$(RESET)"
+	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/pyllock/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
+	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/pyllock/$(LATEST)/Makefile
 
 .PHONY: venv
 venv:
@@ -396,7 +396,7 @@ venv:
 	@# $$(VENV) here.
 	@if [ ! -d $(BASEDIR)/venv ]; then \
 		echo "$P $(BD_WHITE)Creating virtual environment...$(RESET)"; \
-		$(BAKA_PYTHON) -m venv $(BASEDIR)/venv --prompt=$(BAKA_VENV_PREFIX); \
+		$(PYLLOCK_PYTHON) -m venv $(BASEDIR)/venv --prompt=$(PYLLOCK_VENV_PREFIX); \
 	fi
 
 	@echo "$P $(BD_WHITE)Upgrading pip...$(RESET)"
