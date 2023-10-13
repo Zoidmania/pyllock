@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.6.1
+# v0.6.2
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -386,7 +386,7 @@ sync:
 update: venv lock sync
 
 .PHONY: upgrade-pyllock
-update-pyllock:
+upgrade-pyllock:
 	@echo "$P $(BD_WHITE)Upgrading Pyllock to latest release...$(RESET)"
 	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/pyllock/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
 	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/pyllock/$(LATEST)/Makefile
