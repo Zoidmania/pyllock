@@ -178,9 +178,10 @@ dev = [
 [project.urls]
 Repository = \"\"
 
+# https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/#fallback-behaviour
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = [\"setuptools\", \"wheel\"]
+build-backend = \"setuptools.build_meta\"
 
 [tool.setuptools]
 include-package-data = true
