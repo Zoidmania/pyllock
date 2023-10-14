@@ -373,10 +373,10 @@ sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
 	@if [ "$(PYLLOCK_ENV)" = "main" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
-		$(VENV) -m piptools sync $(REQS)/main --pip-args "-e $(BASEDIR)"; \
+		$(VENV) -m piptools sync $(REQS)/main; \
 		$(VENV) -m pip check; \
 	elif [ "$(PYLLOCK_ENV)" = "dev" ]; then \
-		$(VENV) -m piptools sync $(REQS)/dev --pip-args "-e $(BASEDIR)"; \
+		$(VENV) -m piptools sync $(REQS)/dev; \
 		$(VENV) -m pip check; \
 	else \
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
