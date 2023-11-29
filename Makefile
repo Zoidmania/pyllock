@@ -290,6 +290,12 @@ ${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)init$(RESET)
 You $(BD_UL_IT_STD)must$(RESET) specify your project's dependencies according to $(BD_MAGENTA)PEP 621$(RESET). Additional
 development dependencies should be specified in a list called $(BD_MAGENTA)dev$(RESET) in the
 $(BD_MAGENTA)[project.optional-dependencies]$(RESET) section.
+
+$(BD_BLUE)##$(RESET) $(BD_STD)Extra Functions$(RESET) $(BD_BLUE)##$(RESET)
+
+To add extra functions, create the file $(BD_IT_BLUE)pylk-extras.mk$(RESET) next to this Makefile. It
+will automatically be imported _after_ the default targets, giving you the ability
+to override them.
 endef
 
 ## Directory and Env Helpers
@@ -405,3 +411,7 @@ venv:
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
 	@$(VENV) -m pip install --upgrade pip-tools wheel
+
+# Include extra functions for this project, if they exist.
+# See: https://www.gnu.org/software/make/manual/html_node/Include.html
+-include pylk-extras.mk
