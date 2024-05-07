@@ -166,7 +166,7 @@ authors = [
 ${SP}${SP}${SP}${SP}{name = \"\", email = \"\"},
 ]
 readme = \"readme.md\"
-# For example, \">= 3.10\"
+# For example, \">= 3.10\" or "== 3.11".
 requires-python = \"\"
 # See: https://pypi.org/classifiers/
 classifiers = [\"Private :: Do Not Upload\"]
