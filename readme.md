@@ -150,8 +150,9 @@ After you've copied the Pyllock `Makefile` to your project root:
     - This target installs dependencies defined in the _lock files_, not directly from
       `pyproject.toml`.
 
-Note: `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
-starting brand new projects.
+> [!NOTE]
+> `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
+> starting brand new projects.
 
 If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
 will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
