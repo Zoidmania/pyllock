@@ -41,6 +41,11 @@
 # Set a default target. In this case, print help text.
 .DEFAULT_GOAL := help
 
+# Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
+# specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
+# this, it must be surrounded with quotes.
+PIPTOOLS_VERSION := >=7.4.0,<8
+
 ## ANSI Escapes
 # All high-intensity colors aren't boldable. The only high-intensity color used here is Orange.
 # For more info, see https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit.
@@ -410,7 +415,7 @@ venv:
 	@$(VENV) -m pip install --upgrade pip
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
-	@$(VENV) -m pip install --upgrade pip-tools wheel
+	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel
 
 # Include extra functions for this project, if they exist.
 # See: https://www.gnu.org/software/make/manual/html_node/Include.html
