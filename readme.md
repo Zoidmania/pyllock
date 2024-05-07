@@ -1,9 +1,9 @@
 # Pyllock ¯\\\_(ツ)_/¯
 
-![GitHub](https://img.shields.io/github/license/Zoidmania/pyllock)
-![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Pyllock)
-![Pronounciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)
-![Footgun?](https://img.shields.io/badge/jury's%20out-red?style=flat&label=footgun%3F)
+[![License](https://img.shields.io/github/license/Zoidmania/pyllock)](https://github.com/Zoidmania/pyllock/blob/main/LICENSE)
+[![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Pyllock)](https://github.com/Zoidmania/pyllock/releases)
+[![Pronounciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)](#)
+[![Footgun?](https://img.shields.io/badge/jury's%20out-red?style=flat&label=footgun%3F)](https://news.ycombinator.com/item?id=17393292)
 
 On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
 [`pip-tools`][pip-tools] to manage my Python projects these days. I've workshopped this process into
@@ -150,8 +150,9 @@ After you've copied the Pyllock `Makefile` to your project root:
     - This target installs dependencies defined in the _lock files_, not directly from
       `pyproject.toml`.
 
-Note: `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
-starting brand new projects.
+> [!NOTE]
+> `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
+> starting brand new projects.
 
 If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
 will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and

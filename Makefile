@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.6.4
+# v0.6.5
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -40,6 +40,11 @@
 
 # Set a default target. In this case, print help text.
 .DEFAULT_GOAL := help
+
+# Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
+# specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
+# this, it must be surrounded with quotes.
+PIPTOOLS_VERSION := >=7.4.0,<8
 
 ## ANSI Escapes
 # All high-intensity colors aren't boldable. The only high-intensity color used here is Orange.
@@ -354,11 +359,11 @@ lock:
 	@$(shell mkdir -p $(REQS))
 
 	@echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"
-	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking \
+	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
 		-o $(REQS)/main $(BASEDIR)/pyproject.toml
 
 	@echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"
-	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking \
+	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
 		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
 
 .PHONY: pyproject
@@ -410,7 +415,7 @@ venv:
 	@$(VENV) -m pip install --upgrade pip
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
-	@$(VENV) -m pip install --upgrade pip-tools wheel
+	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel
 
 # Include extra functions for this project, if they exist.
 # See: https://www.gnu.org/software/make/manual/html_node/Include.html
