@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.6.5
+# v0.6.6
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -166,7 +166,7 @@ authors = [
 ${SP}${SP}${SP}${SP}{name = \"\", email = \"\"},
 ]
 readme = \"readme.md\"
-# For example, \">= 3.10\"
+# For example, \">= 3.10\" or "== 3.11".
 requires-python = \"\"
 # See: https://pypi.org/classifiers/
 classifiers = [\"Private :: Do Not Upload\"]
@@ -249,8 +249,8 @@ ${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from th
 ${SP}${SP}${SP}${SP}the project.
 
 $(BD_GREEN)refresh$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET) and $(BD_GREEN)update$(RESET), in that order. Use to
-${SP}${SP}${SP}${SP}completely rebuild a virtual environment.
+${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET), $(BD_GREEN)venv$(RESET), and $(BD_GREEN)sync$(RESET), in that order. Use
+${SP}${SP}${SP}${SP}to completely rebuild a virtual environment.
 
 $(BD_GREEN)sync$(RESET)
 ${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any new
@@ -377,7 +377,7 @@ pyproject:
 	@echo "$P $(BD_YELLOW)Edit your$(RESET) $(BD_IT_BLUE)project.toml$(RESET) $(BD_YELLOW)metadata and dependencies before locking!$(RESET)"
 
 .PHONY: refresh
-refresh: clean update
+refresh: clean venv sync
 
 .PHONY: sync
 sync:
