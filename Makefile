@@ -354,11 +354,11 @@ lock:
 	@$(shell mkdir -p $(REQS))
 
 	@echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"
-	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking \
+	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
 		-o $(REQS)/main $(BASEDIR)/pyproject.toml
 
 	@echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"
-	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking \
+	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
 		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
 
 .PHONY: pyproject
