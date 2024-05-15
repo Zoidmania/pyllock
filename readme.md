@@ -33,54 +33,74 @@ To get started, simply place the `Makefile` at the root of your project, and:
 make # prints help text
 ```
 
-## Disclaimer
+## Installation
 
-**This is in no way a sales pitch**; I'm only sharing my insanity. I'm resistant to [Poetry][poetry]
-(some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
-like Poetry doesn't mean you shouldn't use it. In fact, you probably should, it's a good tool.
+Simple:
 
-[poetry]: https://python-poetry.org/
+```bash
+# Download the Makefile
+curl https://raw.githubusercontent.com/Zoidmania/pyllock/main/Makefile -o Makefile
+```
 
-Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pyproject.toml` +
-`Makefile` to begin with.
+Place the `Makefile` at the root of your project.
 
-[blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
+## Usage
 
-## Rationale
+After you've copied the Pyllock `Makefile` to your project root:
 
-I'm a fan of using minimal tooling to get things working, especially built-in tools. Since `pip` and
-`venv` ship with most standard Python installations, that's been my workflow for quite some time. I
-used Poetry for a while because it made life easier, but it always bugged me that I was replacing
-`pip`'s functionality.
+1. Run `make` (implies `make help`) to print help text.
+1. If you don't have a virtual environment in a folder called `venv` at the root of your project,
+   create one with `make venv`.
+    - See [Optional Environment Variables](#optional-environment-variables) for options.
+1. If you already have a `pyproject.toml`, make sure the metadata and dependencies are specified
+   according to [PEP 621][pep-621]. If not, run `make pyproject` to create a boilerplate
+   `pyproject.toml` that you can fill out.
+1. Once you've defined your dependencies, run `make lock` to generate lock files.
+    - The lock files will appear at `<project-root>/lock/[main|dev]`.
+1. To _install_ your dependencies, run `make install` (or the alias `make sync`).
+    - This target installs dependencies defined in the _lock files_, not directly from
+      `pyproject.toml`.
 
-For a few years, Poetry was the only _good_ way to manage your Python dependencies. Its ability to
-resolve the dependency graph introduced modern project management to Python development, and it
-continues to enjoy widespread usage.
+> [!NOTE]
+> `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
+> starting brand new projects.
 
-However, `pip` has received upgrades in recent years, adding its own [dependency resolver][pip-res]
-(enabled by default). It's still not quite as good as Poetry's, but it's sufficient. That's one
-piece of the puzzle solved.
+If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
+will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
+install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
+targets, in that order.
 
-[pip-res]: https://pip.pypa.io/en/stable/topics/dependency-resolution/
+## Additional Notes
 
-With the introduction of [PEP 621][pep-621], we gained the ability to declare the packages we
-required in a concise manner along with project metadata. Gone were the days of needing to supply a
-large `requirements.txt` file and wondering "which of these packages do I _actually_ need, and which
-of them are dependencies of my dependencies?" Coupled with `pip`'s new resolver and `venv` to
-isolate project dependencies, the only thing missing is the ability to lock the dependency graph.
+### Activating Your Virtual Environment
 
-Since `pip` still doesn't have a good way to do this, my original inclination was to simply
-`pip freeze` after installing dependencies, but this has a couple of problems:
+**_Nota Bene_**: `make` subshells the calls. You can't activate the virtual environment with `make`
+in _your_ shell session. I have a shell alias that activates the venv in the current dir:
 
-- Classic `requirements.txt` files make for poor lockfiles because `pip freeze` emits dependencies
-  in alphabetical order, not in an order that's suitable for ordered installations (rare).
-- This requires installing dependencies _before_ locking, which is an antipattern IMO. If dependency
-  installation fails, then you may have just corrupted your environment.
+```bash
+alias act="source venv/bin/activate"
+```
 
-This is where `pip-tools` comes in, a package that allows developers to "compile" requirements in a
-temporary, isolated virtual environment without messing with your development env, in addition to
-labeling and ordering the dependencies in a sensible manner. Pyllock uses this feature of `pip-tools`
-to generate its lock files.
+### Parallel Excution
+
+Pyllock's recipes are inteded to be run _serially_. Parallel execution is disabled.
+
+### Optional Environment Variables
+
+| Variable              | Affected Commands | Usage |
+|-----------------------|-------------------|-------|
+| `PYLLOCK_PYTHON`      | `venv`            | Set to a path to an alternate Python interpreter. |
+| `PYLLOCK_VENV_PREFIX` | `venv`            | Set an alternate prompt prefix shown when activating the venv. Defaults to the name of the parent directory to your project. |
+| `PYLLOCK_ENV`         | `sync`/`install`  | Determines whether this environment is "prod" or "dev". Defaults to "dev". |
+
+### Production
+
+In production, you don't want to install your development-only dependencies. That's why we maintain
+separate `main` and `dev` lock files.
+
+To ensure that `make sync` (a.k.a. `make install`) only installs the main dependencies, set the
+environment variable `PYLLOCK_ENV` to `"main"` or `"prod"`. If unset, Pyllock will default to
+`"dev"`, which will install the `dev` lock file.
 
 ## Requirements
 
@@ -122,80 +142,59 @@ file for you to get started). Namely:
 [pep-621]: https://peps.python.org/pep-0621/
 [pep-508]: https://peps.python.org/pep-0508/
 
-## Installation
+---
 
-Simple:
+# Rationale
 
-```bash
-# Download the Makefile
-curl https://raw.githubusercontent.com/Zoidmania/pyllock/main/Makefile -o Makefile
-```
+I'm a fan of using minimal tooling to get things working, especially built-in tools. Since `pip` and
+`venv` ship with most standard Python installations, that's been my workflow for quite some time. I
+used Poetry for a while because it made life easier, but it always bugged me that I was replacing
+`pip`'s functionality.
 
-Place the `Makefile` at the root of your project.
+For a few years, Poetry was the only _good_ way to manage your Python dependencies. Its ability to
+resolve the dependency graph introduced modern project management to Python development, and it
+continues to enjoy widespread usage.
 
-## Usage
+However, `pip` has received upgrades in recent years, adding its own [dependency resolver][pip-res]
+(enabled by default). It's still not quite as good as Poetry's, but it's sufficient. That's one
+piece of the puzzle solved.
 
-After you've copied the Pyllock `Makefile` to your project root:
+[pip-res]: https://pip.pypa.io/en/stable/topics/dependency-resolution/
 
-1. Run `make` (implies `make help`) to print help text.
-1. If you don't have a virtual environment in a folder called `venv` at the root of your project,
-   create one with `make venv`.
-    - See [Optional Environment Variables](#optional-environment-variables) for options.
-1. If you already have a `pyproject.toml`, make sure the metadata and dependencies are specified
-   according to [PEP 621][pep-621]. If not, run `make pyproject` to create a boilerplate
-   `pyproject.toml` that you can fill out.
-1. Once you've defined your dependencies, run `make lock` to generate lock files.
-    - The lock files will appear at `<project-root>/lock/[main|dev]`.
-1. To _install_ your dependencies, run `make install` (or the alias `make sync`).
-    - This target installs dependencies defined in the _lock files_, not directly from
-      `pyproject.toml`.
+With the introduction of [PEP 621][pep-621], we gained the ability to declare the packages we
+required in a concise manner along with project metadata. Gone were the days of needing to supply a
+large `requirements.txt` file and wondering "which of these packages do I _actually_ need, and which
+of them are dependencies of my dependencies?" Coupled with `pip`'s new resolver and `venv` to
+isolate project dependencies, the only thing missing is the ability to lock the dependency graph.
 
-> [!NOTE]
-> `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
-> starting brand new projects.
+Since `pip` still doesn't have a good way to do this, my original inclination was to simply
+`pip freeze` after installing dependencies, but this has a couple of problems:
 
-If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
-will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
-install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
-targets, in that order.
+- Classic `requirements.txt` files make for poor lockfiles because `pip freeze` emits dependencies
+  in alphabetical order, not in an order that's suitable for ordered installations (rare).
+- This requires installing dependencies _before_ locking, which is an antipattern IMO. If dependency
+  installation fails, then you may have just corrupted your environment.
 
-### Parallel Excution
+This is where `pip-tools` comes in, a package that allows developers to "compile" requirements in a
+temporary, isolated virtual environment without messing with your development env, in addition to
+labeling and ordering the dependencies in a sensible manner. Pyllock uses this feature of `pip-tools`
+to generate its lock files.
 
-Pyllock's recipes are inteded to be run _serially_. Parallel execution is disabled.
+## Disclaimer
 
-### Optional Environment Variables
+**This is in no way a sales pitch**; I'm only sharing my insanity. I'm resistant to [Poetry][poetry]
+(some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
+like Poetry doesn't mean you shouldn't use it. In fact, you probably should, it's a good tool.
 
-The command `make venv` looks for two optional environment variables:
+[poetry]: https://python-poetry.org/
 
-- Set `PYLLOCK_PYTHON` to point to your Python interpreter of choice. If this isn't set, Pyllock
-  will use the default `python3` on your `PATH`.
-- Set `PYLLOCK_VENV_PREFIX` to a string that will prefix your shell prompt. If this isn't set, the
-  value defaults to the name of the parent directory to your project.
+Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pyproject.toml` +
+`Makefile` to begin with.
 
-The command `make sync` (a.k.a. `make install`) looks for `PYLLOCK_ENV` to determine whether this is
-a production ("main") or development ("dev") environment, defaulting to "dev" if unset. See
-[Production](#production) for more details.
+[blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
 
-### Activate Your Virtual Environment
 
-**_Nota Bene_**: `make` subshells the calls, so you can't activate the virtual environment with
-`make` in _your_ shell session. I have a shell alias that does it (when run from the root of a
-project):
-
-```bash
-alias act="source venv/bin/activate"
-```
-
-### Production
-
-In production, you don't want to install your development-only dependencies. That's why we maintain
-separate `main` and `dev` lock files.
-
-To ensure that `make sync` (a.k.a. `make install`) only installs the main dependencies, set the
-environment variable `PYLLOCK_ENV` to `"main"` or `"prod"`. If unset, Pyllock will default to
-`"dev"`, which will install the `dev` lock file.
-
-# Acknowledgement
+## Acknowledgement
 
 I leveraged some ideas and code from mitjafelicijan's [makext][makext], an effort to add extensions
 for Makefiles being used as a command runner.
