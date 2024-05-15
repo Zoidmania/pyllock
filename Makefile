@@ -45,8 +45,8 @@ endif
 # See: https://www.gnu.org/software/make/manual/html_node/Parallel-Disable.html
 .NOTPARALLEL:
 
-# Set a default target. In this case, print help text.
-.DEFAULT_GOAL := help
+# Set a default target. In this case, print simple usage.
+.DEFAULT_GOAL := usage
 
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
@@ -229,6 +229,9 @@ ${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
 
 The following commands are available.
 
+$(BD_GREEN)build$(RESET)
+${SP}${SP}${SP}${SP}Builds a distribution of your Python project, according to $(BD_IT_BLUE)pyproject.toml$(RESET).
+
 $(BD_GREEN)clean$(RESET)
 ${SP}${SP}${SP}${SP}Deletes the project's virtual environment, any $(BD_IT_BLUE).egg-info$(RESET) metadata, and
 ${SP}${SP}${SP}${SP}build artifacts.
@@ -273,6 +276,9 @@ ${SP}${SP}${SP}${SP}Suitable for running after adding, removing, or updating dep
 $(BD_GREEN)upgrade-pyllock$(RESET)
 ${SP}${SP}${SP}${SP}Updates Pyllock to the latest release version.
 
+$(BD_GREEN)usage$(RESET)
+${SP}${SP}${SP}${SP}Prints simple usage text. Default behavior.
+
 $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
 ${SP}${SP}${SP}${SP}interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the default interpreter on the
@@ -309,6 +315,17 @@ will automatically be imported _after_ the default targets, giving you the
 ability to override them.
 endef
 
+define USAGE
+Pyllock
+
+"The stupid Python project manager."
+
+${SP}${SP}Usage: make <command>
+
+Available commands:
+
+endef
+
 ## Directory and Env Helpers
 
 BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -329,18 +346,14 @@ endif
 
 ## Targets
 
-.PHONY: build
+.PHONY: build # Build the Python application.
 build:
 	@$(VENV) -m build
 
-.PHONY: clean
-clean:
-	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
-	@rm -rf $(BASEDIR)/venv
+.PHONY: clean # Remove venv, egg-info, and dist.
+clean: rm-venv clean-build
 
-	$(MAKE) -s clean-build
-
-.PHONY: clean-build
+.PHONY: clean-build # Remove egg-info and dist.
 clean-build:
 	@echo "$P $(BD_YELLOW)Removing project's egg-info...$(RESET)"
 	@find $(BASEDIR) -type d -name '*.egg-info' -exec rm -rf {} +
@@ -350,17 +363,17 @@ clean-build:
 		rm -rf $(BASEDIR)/dist; \
 	fi
 
-.PHONY: help
+.PHONY: help # Print help doc.
 help:
 	@echo "$(HELP)"
 
-.PHONY: init
+.PHONY: init # Create venv and a boilerplate pyproject.toml file.
 init: venv pyproject
 
-.PHONY: install
+.PHONY: install # Alias for sync.
 install: sync
 
-.PHONY: lock
+.PHONY: lock # Create prod and dev lockfiles from pyproject.toml.
 lock:
 	@$(shell mkdir -p $(REQS))
 
@@ -372,7 +385,7 @@ lock:
 	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
 		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
 
-.PHONY: pyproject
+.PHONY: pyproject # Create a boilerplate pyproject.toml file.
 pyproject:
 	@if [ ! -f $(BASEDIR)/pyproject.toml ]; then \
 		echo "$(PYPROJECT_TOML)" > $(BASEDIR)/pyproject.toml; \
@@ -382,10 +395,15 @@ pyproject:
 	fi
 	@echo "$P $(BD_YELLOW)Edit your$(RESET) $(BD_IT_BLUE)project.toml$(RESET) $(BD_YELLOW)metadata and dependencies before locking!$(RESET)"
 
-.PHONY: refresh
+.PHONY: refresh # Remove build dist and egg-info, recreate venv, and sync lock into it.
 refresh: clean venv sync
 
-.PHONY: sync
+.PHONY: rm-venv # Remove venv.
+rm-venv:
+	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
+	@rm -rf $(BASEDIR)/venv
+
+.PHONY: sync # Sync venv with lockfile. Removes non-defined dependencies.
 sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
@@ -399,16 +417,21 @@ sync:
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
 	fi
 
-.PHONY: update
+.PHONY: update # Create or update a venv, compute lock files to latest versions, and sync depedendencies.
 update: venv lock sync
 
-.PHONY: upgrade-pyllock
+.PHONY: upgrade-pyllock # Pull the latest version of Pyllock.
 upgrade-pyllock:
 	@echo "$P $(BD_WHITE)Upgrading Pyllock to latest release...$(RESET)"
 	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/pyllock/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
 	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/pyllock/$(LATEST)/Makefile
 
-.PHONY: venv
+.PHONY: usage
+usage:
+	@echo "$(USAGE)"
+	@grep -vE '^[[:space:]]' $(MAKEFILE_LIST) | grep -E '^.*:.* #' | sed -E 's/.PHONY:(.*):.*#(.*)/  \1###\2/' | sed -E 's/.PHONY: //g' | column -t -s '###'
+
+.PHONY: venv # Create or update a venv.
 venv:
 	@# We need to grab the Python interpreter on $$PATH to create the venv first, so don't use
 	@# $$(VENV) here.
