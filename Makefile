@@ -215,18 +215,17 @@ $(BD_BLUE)#$(RESET) $(BD_STD)Pyllock ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
 For more details, see $(UL_BLUE)https://github.com/Zoidmania/pyllock$(RESET).
 
 This manager creates virtual environments for your Python project and manages
-them with a standard virtual environment and minimal tooling. It $(BD_UL_IT_STD)does not$(RESET)
-activate the environment for you! You must activate your virtual environment
-with:
+them with minimal tooling. It $(BD_UL_IT_STD)does not$(RESET) activate the environment for you! You
+must activate your virtual environment with:
 
-${SP}${SP}$$ $(BD_WHITE)cd /path/to/project/$(BD_RESET)
-${SP}${SP}$$ $(BD_WHITE)source venv/bin/activate$(BD_RESET)
+${SP}${SP}${SP}${SP}$(BD_IT_WHITE)cd /path/to/project/$(BD_RESET)
+${SP}${SP}${SP}${SP}$(BD_IT_WHITE)source venv/bin/activate$(BD_RESET)
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Commands$(RESET) $(BD_BLUE)##$(RESET)
 
 All commands are issued in the following format:
 
-${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
+${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
 
 The following commands are available.
 
@@ -278,8 +277,8 @@ $(BD_GREEN)venv$(RESET)
 ${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
 ${SP}${SP}${SP}${SP}interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the default interpreter on the
 ${SP}${SP}${SP}${SP}$(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary
-${SP}${SP}${SP}${SP}dependencies of Pyllock. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one already
-${SP}${SP}${SP}${SP}exists.
+${SP}${SP}${SP}${SP}dependencies of Pyllock. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one
+${SP}${SP}${SP}${SP}already exists.
 
 ${SP}${SP}${SP}${SP}By default, the venv's prefix is the name of the parent directory of the
 ${SP}${SP}${SP}${SP}project directory. This can be overridden by setting $(IT_ORANGE)PYLLOCK_VENV_PREFIX$(RESET).
@@ -289,7 +288,7 @@ $(BD_BLUE)##$(RESET) $(BD_STD)Getting Started$(RESET) $(BD_BLUE)##$(RESET)
 You $(BD_UL_IT_STD)must$(RESET) choose a Python interpreter to use for initializing the virtual
 environment (venv). Set the environment variable $(IT_ORANGE)PYLLOCK_PYTHON$(RESET) to the your
 interpreter of choice, otherwise the default Python interpreter on $(IT_ORANGE)PATH$(RESET) is used.
-The interpreter specified with this variable is $(BD_UL_STD)only used to$(RESET) $(BD_UL_STD)create the venv$(RESET).
+The interpreter specified with this variable is $(BD_UL_STD)only used to create the venv$(RESET).
 
 To get started, place the Pyllock $(BD_IT_BLUE)Makefile$(RESET) in the root of your project. Then,
 $(BD_UL_IT_STD)remove any existing venvs from your project$(RESET).
@@ -297,7 +296,7 @@ $(BD_UL_IT_STD)remove any existing venvs from your project$(RESET).
 To start managing a project, simply run the following and begin tracking your
 dependencies in the generated $(BD_IT_BLUE)project.toml$(RESET).
 
-${SP}${SP}$$ $(BD_WHITE)make$(BD_RESET) $(BD_GREEN)init$(RESET)
+${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make$(BD_RESET) $(BD_GREEN)init$(RESET)
 
 You $(BD_UL_IT_STD)must$(RESET) specify your project's dependencies according to $(BD_MAGENTA)PEP 621$(RESET). Additional
 development dependencies should be specified in a list called $(BD_MAGENTA)dev$(RESET) in the
@@ -306,8 +305,8 @@ $(BD_MAGENTA)[project.optional-dependencies]$(RESET) section.
 $(BD_BLUE)##$(RESET) $(BD_STD)Extra Functions$(RESET) $(BD_BLUE)##$(RESET)
 
 To add extra functions, create the file $(BD_IT_BLUE)pylk-extras.mk$(RESET) next to this Makefile. It
-will automatically be imported _after_ the default targets, giving you the ability
-to override them.
+will automatically be imported _after_ the default targets, giving you the
+ability to override them.
 endef
 
 ## Directory and Env Helpers
@@ -423,6 +422,7 @@ venv:
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
 	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel
+
 
 # Include extra functions for this project, if they exist.
 # See: https://www.gnu.org/software/make/manual/html_node/Include.html
