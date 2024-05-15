@@ -311,7 +311,7 @@ $(BD_MAGENTA)[project.optional-dependencies]$(RESET) section.
 $(BD_BLUE)##$(RESET) $(BD_STD)Extra Functions$(RESET) $(BD_BLUE)##$(RESET)
 
 To add extra functions, create the file $(BD_IT_BLUE)pylk-extras.mk$(RESET) next to this Makefile. It
-will automatically be imported _after_ the default targets, giving you the
+will automatically be imported $(IT_STD)after$(RESET) the default targets, giving you the
 ability to override them.
 endef
 
