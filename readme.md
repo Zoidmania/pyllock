@@ -5,33 +5,18 @@
 [![Pronounciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)](#)
 [![Footgun?](https://img.shields.io/badge/jury's%20out-red?style=flat&label=footgun%3F)](https://news.ycombinator.com/item?id=17393292)
 
-On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
-[`pip-tools`][pip-tools] to manage my Python projects these days. I've workshopped this process into
-an informal standard that I'm now calling Pyllock. Pyllock will:
+Pyllock is a simple, probably stupid Python project manager. It's a Makefile being used as a command
+runner.
 
-[pip-tools]: https://github.com/jazzband/pip-tools/
+On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
+[`pip-tools`][pip-tools] to manage my Python projects these days. Pyllock will:
 
 - Bootstrap a virtual environment using the `venv` module with the latest versions of `pip`,
   `wheel`, and `pip-tools`.
 - Create lock files using `pip-tools` based on the contents of your project's `pyproject.toml`.
 - Install and update dependencies based on the lock files.
 
-New developers to existing projects can bootstrap their environments with ease using `make install`.
-
-Add the dependencies you want in `pyproject.toml`, and pin the versions using `pip-tools` in a
-`requirements.txt`-style lock file. `pip-tools` creates a temporary virtual environment whenever a
-new lockfile is created, so you don't have to worry about poisoning your venv. Using Pyllock, devs can
-generate new lockfiles and update their local env using `make update`.
-
-Note that this methodology generates all of the main dependencies in the both the `main` and `dev`,
-but that also ensures that if only the `dev` section is updated, then one could verify that the
-dependencies stay in sync on both lock files.
-
-To get started, simply place the `Makefile` at the root of your project, and:
-
-```bash
-make # prints help text
-```
+[pip-tools]: https://github.com/jazzband/pip-tools/
 
 ## Installation
 
@@ -46,29 +31,55 @@ Place the `Makefile` at the root of your project.
 
 ## Usage
 
-After you've copied the Pyllock `Makefile` to your project root:
+To get started, run the default target:
 
-1. Run `make` (implies `make help`) to print help text.
-1. If you don't have a virtual environment in a folder called `venv` at the root of your project,
-   create one with `make venv`.
+```bash
+make # prints help text
+```
+
+### Starting a Brand New Project
+
+Generally, my workflow to bootstrap a project is as follows.
+
+1. Create a virtual environment in a folder called `venv` at the root of the project and a
+   boilerplate `pyproject.toml` with `make init`.
     - See [Optional Environment Variables](#optional-environment-variables) for options.
-1. If you already have a `pyproject.toml`, make sure the metadata and dependencies are specified
-   according to [PEP 621][pep-621]. If not, run `make pyproject` to create a boilerplate
-   `pyproject.toml` that you can fill out.
-1. Once you've defined your dependencies, run `make lock` to generate lock files.
+1. Fill out `pyproject.toml` with minimum metadata and dependencies required for the project.
+1. Run `make lock` to generate lock files.
     - The lock files will appear at `<project-root>/lock/[main|dev]`.
-1. To _install_ your dependencies, run `make install` (or the alias `make sync`).
+1. Install the dependencies to the virtual environemtn with `make install` (an alias for
+   `make sync`).
     - This target installs dependencies defined in the _lock files_, not directly from
       `pyproject.toml`.
 
-> [!NOTE]
-> `make init` is a convenience that runs the `venv` and `pyproject` targets. It's useful for
-> starting brand new projects.
+### Adding or Removing Dependencies
 
-If you want to _add_ or _remove_ dependencies to or from an existing project, running `make update`
-will update your venv's base dependencies (`pip-tools` and `wheel`), lock the new dependencies, and
-install based on the new lock. This target is a convenience that runs the `venv`, `lock`, and `sync`
-targets, in that order.
+If one wants to _add_ or _remove_ dependencies to or from an existing project, simply edit
+`pyproject.toml`. Then:
+
+```bash
+make lock
+make install
+```
+
+### Updating Dependencies to New Versions
+
+This is a convenience that runs the `venv`, `lock`, and `install` targets, in that order:
+
+```bash
+make update
+```
+
+Running `make update` will update the venv's base dependencies (`pip`, `pip-tools` and `wheel`),
+lock updated dependencies, and install the dependencies in the updated lockfile.
+
+### Bootstrapping a Project on Another System
+
+If lockfiles already exist for a project, bootstrapping the project elsewhere is easy:
+
+```bash
+make refresh
+```
 
 ## Additional Notes
 
