@@ -194,3 +194,10 @@ separate `main` and `dev` lock files.
 To ensure that `make sync` (a.k.a. `make install`) only installs the main dependencies, set the
 environment variable `PYLLOCK_ENV` to `"main"` or `"prod"`. If unset, Pyllock will default to
 `"dev"`, which will install the `dev` lock file.
+
+# Acknowledgement
+
+I leveraged some ideas and code from mitjafelicijan's [makext][makext], an effort to add extensions
+for Makefiles being used as a command runner.
+
+[makext]: https://github.com/mitjafelicijan/makext/tree/master
