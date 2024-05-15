@@ -27,6 +27,13 @@
 # SOFTWARE.
 #################
 
+## Preflight Checks
+
+# If OS is Windows, exits with error.
+ifeq ($(OS),Windows_NT)
+$(error Pyllock does not support Windows.)
+endif
+
 ## Configs
 
 # For performance reasons and to make intermediate env vars "persistent", we use one subshell.
