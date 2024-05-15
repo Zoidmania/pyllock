@@ -118,16 +118,17 @@ environment variable `PYLLOCK_ENV` to `"main"` or `"prod"`. If unset, Pyllock wi
 Pyllock only works in Linux and Unix environments. It's designed for use with Bash, and hasn't been
 tested with other shells. It also expects the following programs are available:
 
-- `awk`
-- `column`
-- `curl`
-- `echo`
-- `find`
-- `mkdir`
-- `mv`
-- `rm`
-- `sed`
-- `touch`
+- Usual tools:
+  - `awk`
+  - `column`
+  - `curl`
+  - `echo`
+  - `find`
+  - `mkdir`
+  - `mv`
+  - `rm`
+  - `sed`
+  - `touch`
 - GNU `make`
     - Tested with GNU Make 4.3.
     - Doesn't work with "standard" `make`. Pyllock relies on features of GNU Make.
