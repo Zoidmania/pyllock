@@ -162,6 +162,7 @@ P := "'$(BD_GREEN)'['$(WHITE)'Pyllock'$(BD_GREEN)']'$(RESET)'"
 SP = " "
 
 define PYPROJECT_TOML
+# See: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
 # If any strings are left empty, 'make lock' will fail.
 # To debug, run 'pip install .' to emit errors.
 [project]
