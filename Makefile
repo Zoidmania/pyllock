@@ -349,6 +349,7 @@ endif
 
 .PHONY: build # Build the Python application.
 build:
+	@echo "$P $(BD_WHITE)Building package distribution...$(RESET)"
 	@$(VENV) -m build
 
 .PHONY: clean # Remove venv, egg-info, and dist.
