@@ -48,10 +48,26 @@ endif
 # Set a default target. In this case, print simple usage.
 .DEFAULT_GOAL := usage
 
+## Directory and Env Helpers
+
+BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+VENV := $(BASEDIR)/venv/bin/python
+REQS := $(BASEDIR)/lock
+
+# By default GNU make loads what is already in `env`. This extends it to other files.
+PYLLOCK_ENV_FILE ?= .env
+ifneq ("$(wildcard $(PYLLOCK_ENV_FILE))","")
+    $(eval include $(PYLLOCK_ENV_FILE))
+endif
+
+PYLLOCK_PYTHON ?= /usr/bin/env python3
+PYLLOCK_VENV_PREFIX ?= "$(shell basename $(BASEDIR))"
+PYLLOCK_ENV ?= dev
+
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
 # this, it must be surrounded with quotes.
-PIPTOOLS_VERSION := >=7.4.0,<8
+PIPTOOLS_VERSION ?= >=7.4.0,<8
 
 ## ANSI Escapes
 # All high-intensity colors aren't boldable. The only high-intensity color used here is Orange.
@@ -274,6 +290,9 @@ $(BD_GREEN)refresh$(RESET)
 ${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET), $(BD_GREEN)venv$(RESET), and $(BD_GREEN)sync$(RESET), in that order. Use
 ${SP}${SP}${SP}${SP}to completely rebuild a virtual environment.
 
+$(BD_GREEN)show-env$(RESET)
+${SP}${SP}${SP}${SP}Print evaluated environment variables that Pyllock is aware of.
+
 $(BD_GREEN)sync$(RESET)
 ${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any new
 ${SP}${SP}${SP}${SP}dependencies will be installed, and any removed dependencies will be
@@ -315,11 +334,29 @@ $(BD_UL_IT_STD)remove any existing venvs from your project$(RESET).
 To start managing a project, simply run the following and begin tracking your
 dependencies in the generated $(BD_IT_BLUE)project.toml$(RESET).
 
-${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make$(BD_RESET) $(BD_GREEN)init$(RESET)
+${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make init$(RESET)
 
 You $(BD_UL_IT_STD)must$(RESET) specify your project's dependencies according to $(BD_MAGENTA)PEP 621$(RESET). Additional
 development dependencies should be specified in a list called $(BD_MAGENTA)dev$(RESET) in the
 $(BD_MAGENTA)[project.optional-dependencies]$(RESET) section.
+
+$(BD_BLUE)##$(RESET) $(BD_STD)Configuring Environment Variables$(RESET) $(BD_BLUE)##$(RESET)
+
+You can set your environment variables in a few places, $(IT_UL_STD)in order of descreasing
+precedence$(RESET):
+
+* In a file at the path specified by $(IT_ORANGE)PYLLOCK_ENV_FILE$(RESET).
+${SP}${SP}${SP}${SP}* If this variable isn't set, its value defaults to $(BD_UL_IT_BLUE).env$(RESET), representing a
+${SP}${SP}${SP}${SP}${SP}${SP}file next to the Pyllock Makefile.
+${SP}${SP}${SP}${SP}* Paths are relative to the Makefile.
+* Inline with your calls (i.e., '$(BD_IT_WHITE)NO_COLOR=1 make help$(RESET)')
+* Persistently for your shell (i.e., in $(BD_IT_BLUE)~/.bashrc$(RESET) for Bash)
+
+You can specify any environment variable Pyllock uses can be set in a file,
+either the default of $(BD_IT_BLUE).env$(RESET) or a file given at $(IT_ORANGE)PYLLOCK_ENV_FILE$(RESET). You cam view
+these values with:
+
+${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make show-env$(RESET)
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Extra Functions$(RESET) $(BD_BLUE)##$(RESET)
 
@@ -327,7 +364,7 @@ To add extra functions, create the file $(BD_IT_BLUE)pylk-extras.mk$(RESET) next
 will automatically be imported $(IT_STD)after$(RESET) the default targets, giving you the
 ability to override them.
 
-$(BD_BLUE)##$(RESET) $(BD_STD)Disable Colors$(RESET) $(BD_BLUE)##$(RESET)
+$(BD_BLUE)##$(RESET) $(BD_STD)Disabling Colors in Output$(RESET) $(BD_BLUE)##$(RESET)
 
 Set the environment variable $(IT_ORANGE)NO_COLOR=1$(RESET) to disable colored output.
 endef
@@ -342,16 +379,6 @@ ${SP}${SP}Usage: make <command>
 Available commands:
 
 endef
-
-## Directory and Env Helpers
-
-BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
-VENV := $(BASEDIR)/venv/bin/python
-REQS := $(BASEDIR)/lock
-
-PYLLOCK_PYTHON ?= /usr/bin/env python3
-PYLLOCK_VENV_PREFIX ?= "$(shell basename $(BASEDIR))"
-PYLLOCK_ENV ?= dev
 
 ## Targets
 
@@ -412,6 +439,15 @@ refresh: clean venv sync
 rm-venv:
 	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
 	@rm -rf $(BASEDIR)/venv
+
+.PHONY: show-env # Print evaluated environment variables that Pyllock is aware of.
+show-env:
+	@echo "PYLLOCK_ENV_FILE=$(PYLLOCK_ENV_FILE)"
+	@echo "PYLLOCK_PYTHON=$(PYLLOCK_PYTHON)"
+	@echo "PYLLOCK_VENV_PREFIX=$(PYLLOCK_VENV_PREFIX)"
+	@echo "PYLLOCK_ENV=$(PYLLOCK_ENV)"
+	@echo "PIPTOOLS_VERSION=$(PIPTOOLS_VERSION)"
+	@echo "NO_COLOR=$(NO_COLOR)"
 
 .PHONY: sync # Sync venv with lockfile. Removes non-defined dependencies.
 sync:
