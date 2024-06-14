@@ -210,6 +210,13 @@ where = []
 include = []
 exclude = []
 namespaces = true # true by default
+
+# https://github.com/jazzband/pip-tools?tab=readme-ov-file#configuration
+#[tool.pip-tools]
+#index-url = https://example.com
+#extra-index-url = https://another-example.com
+#dry-run = true
+#annotate = true
 endef
 
 # All of the spacing is designed to make the help text readable on a 80-column-width console.
