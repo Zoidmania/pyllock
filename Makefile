@@ -365,7 +365,7 @@ clean-build:
 		rm -rf $(BASEDIR)/dist; \
 	fi
 
-.PHONY: help # Print help doc.
+.PHONY: help # Print verbose help.
 help:
 	@echo "$(HELP)"
 
