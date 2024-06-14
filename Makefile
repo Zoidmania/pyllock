@@ -62,196 +62,194 @@ PIPTOOLS_VERSION := >=7.4.0,<8
 # Respect https://no-color.org/.
 NO_COLOR ?= 0
 
-ifdef NO_COLOR
-	ifeq ($(NO_COLOR),1)
+ifeq ($(NO_COLOR),1)
 
-		BLACK   := ""
-		RED     := ""
-		GREEN   := ""
-		YELLOW  := ""
-		BLUE    := ""
-		MAGENTA := ""
-		CYAN    := ""
-		WHITE   := ""
-		ORANGE  := ""
+	BLACK   := ""
+	RED     := ""
+	GREEN   := ""
+	YELLOW  := ""
+	BLUE    := ""
+	MAGENTA := ""
+	CYAN    := ""
+	WHITE   := ""
+	ORANGE  := ""
 
-		# bold
-		BD_STD     := ""
-		BD_BLACK   := ""
-		BD_RED     := ""
-		BD_GREEN   := ""
-		BD_YELLOW  := ""
-		BD_BLUE    := ""
-		BD_MAGENTA := ""
-		BD_CYAN    := ""
-		BD_WHITE   := ""
+	# bold
+	BD_STD     := ""
+	BD_BLACK   := ""
+	BD_RED     := ""
+	BD_GREEN   := ""
+	BD_YELLOW  := ""
+	BD_BLUE    := ""
+	BD_MAGENTA := ""
+	BD_CYAN    := ""
+	BD_WHITE   := ""
 
-		# underline
-		UL_STD     := ""
-		UL_BLACK   := ""
-		UL_RED     := ""
-		UL_GREEN   := ""
-		UL_YELLOW  := ""
-		UL_BLUE    := ""
-		UL_MAGENTA := ""
-		UL_CYAN    := ""
-		UL_WHITE   := ""
-		UL_ORANGE  := ""
+	# underline
+	UL_STD     := ""
+	UL_BLACK   := ""
+	UL_RED     := ""
+	UL_GREEN   := ""
+	UL_YELLOW  := ""
+	UL_BLUE    := ""
+	UL_MAGENTA := ""
+	UL_CYAN    := ""
+	UL_WHITE   := ""
+	UL_ORANGE  := ""
 
-		# italics
-		IT_STD     := ""
-		IT_BLACK   := ""
-		IT_RED     := ""
-		IT_GREEN   := ""
-		IT_YELLOW  := ""
-		IT_BLUE    := ""
-		IT_MAGENTA := ""
-		IT_CYAN    := ""
-		IT_WHITE   := ""
-		IT_ORANGE  := ""
+	# italics
+	IT_STD     := ""
+	IT_BLACK   := ""
+	IT_RED     := ""
+	IT_GREEN   := ""
+	IT_YELLOW  := ""
+	IT_BLUE    := ""
+	IT_MAGENTA := ""
+	IT_CYAN    := ""
+	IT_WHITE   := ""
+	IT_ORANGE  := ""
 
-		# bold and underline
-		BD_UL_STD     := ""
-		BD_UL_BLACK   := ""
-		BD_UL_RED     := ""
-		BD_UL_GREEN   := ""
-		BD_UL_YELLOW  := ""
-		BD_UL_BLUE    := ""
-		BD_UL_MAGENTA := ""
-		BD_UL_CYAN    := ""
-		BD_UL_WHITE   := ""
+	# bold and underline
+	BD_UL_STD     := ""
+	BD_UL_BLACK   := ""
+	BD_UL_RED     := ""
+	BD_UL_GREEN   := ""
+	BD_UL_YELLOW  := ""
+	BD_UL_BLUE    := ""
+	BD_UL_MAGENTA := ""
+	BD_UL_CYAN    := ""
+	BD_UL_WHITE   := ""
 
-		# bold and italics
-		BD_IT_STD     := ""
-		BD_IT_BLACK   := ""
-		BD_IT_RED     := ""
-		BD_IT_GREEN   := ""
-		BD_IT_YELLOW  := ""
-		BD_IT_BLUE    := ""
-		BD_IT_MAGENTA := ""
-		BD_IT_CYAN    := ""
-		BD_IT_WHITE   := ""
+	# bold and italics
+	BD_IT_STD     := ""
+	BD_IT_BLACK   := ""
+	BD_IT_RED     := ""
+	BD_IT_GREEN   := ""
+	BD_IT_YELLOW  := ""
+	BD_IT_BLUE    := ""
+	BD_IT_MAGENTA := ""
+	BD_IT_CYAN    := ""
+	BD_IT_WHITE   := ""
 
-		# italics and underline
-		IT_UL_STD     := ""
-		IT_UL_BLACK   := ""
-		IT_UL_RED     := ""
-		IT_UL_GREEN   := ""
-		IT_UL_YELLOW  := ""
-		IT_UL_BLUE    := ""
-		IT_UL_MAGENTA := ""
-		IT_UL_CYAN    := ""
-		IT_UL_WHITE   := ""
-		IT_UL_ORANGE  := ""
+	# italics and underline
+	IT_UL_STD     := ""
+	IT_UL_BLACK   := ""
+	IT_UL_RED     := ""
+	IT_UL_GREEN   := ""
+	IT_UL_YELLOW  := ""
+	IT_UL_BLUE    := ""
+	IT_UL_MAGENTA := ""
+	IT_UL_CYAN    := ""
+	IT_UL_WHITE   := ""
+	IT_UL_ORANGE  := ""
 
-		# bold, underline, and italics
-		BD_UL_IT_STD     := ""
-		BD_UL_IT_BLACK   := ""
-		BD_UL_IT_RED     := ""
-		BD_UL_IT_GREEN   := ""
-		BD_UL_IT_YELLOW  := ""
-		BD_UL_IT_BLUE    := ""
-		BD_UL_IT_MAGENTA := ""
-		BD_UL_IT_CYAN    := ""
-		BD_UL_IT_WHITE   := ""
+	# bold, underline, and italics
+	BD_UL_IT_STD     := ""
+	BD_UL_IT_BLACK   := ""
+	BD_UL_IT_RED     := ""
+	BD_UL_IT_GREEN   := ""
+	BD_UL_IT_YELLOW  := ""
+	BD_UL_IT_BLUE    := ""
+	BD_UL_IT_MAGENTA := ""
+	BD_UL_IT_CYAN    := ""
+	BD_UL_IT_WHITE   := ""
 
-		RESET := ""
+	RESET := ""
 
-	else
+else
 
-		BLACK   := \033[0;30m
-		RED     := \033[0;31m
-		GREEN   := \033[0;32m
-		YELLOW  := \033[0;33m
-		BLUE    := \033[0;34m
-		MAGENTA := \033[0;35m
-		CYAN    := \033[0;36m
-		WHITE   := \033[0;37m
-		ORANGE  := \033[38;5;214m
+	BLACK   := \033[0;30m
+	RED     := \033[0;31m
+	GREEN   := \033[0;32m
+	YELLOW  := \033[0;33m
+	BLUE    := \033[0;34m
+	MAGENTA := \033[0;35m
+	CYAN    := \033[0;36m
+	WHITE   := \033[0;37m
+	ORANGE  := \033[38;5;214m
 
-		# bold
-		BD_STD     := \033[1m
-		BD_BLACK   := \033[1;30m
-		BD_RED     := \033[1;31m
-		BD_GREEN   := \033[1;32m
-		BD_YELLOW  := \033[1;33m
-		BD_BLUE    := \033[1;34m
-		BD_MAGENTA := \033[1;35m
-		BD_CYAN    := \033[1;36m
-		BD_WHITE   := \033[1;37m
+	# bold
+	BD_STD     := \033[1m
+	BD_BLACK   := \033[1;30m
+	BD_RED     := \033[1;31m
+	BD_GREEN   := \033[1;32m
+	BD_YELLOW  := \033[1;33m
+	BD_BLUE    := \033[1;34m
+	BD_MAGENTA := \033[1;35m
+	BD_CYAN    := \033[1;36m
+	BD_WHITE   := \033[1;37m
 
-		# underline
-		UL_STD     := \033[4m
-		UL_BLACK   := \033[4;30m
-		UL_RED     := \033[4;31m
-		UL_GREEN   := \033[4;32m
-		UL_YELLOW  := \033[4;33m
-		UL_BLUE    := \033[4;34m
-		UL_MAGENTA := \033[4;35m
-		UL_CYAN    := \033[4;36m
-		UL_WHITE   := \033[4;37m
-		UL_ORANGE  := \033[4;38;5;214m
+	# underline
+	UL_STD     := \033[4m
+	UL_BLACK   := \033[4;30m
+	UL_RED     := \033[4;31m
+	UL_GREEN   := \033[4;32m
+	UL_YELLOW  := \033[4;33m
+	UL_BLUE    := \033[4;34m
+	UL_MAGENTA := \033[4;35m
+	UL_CYAN    := \033[4;36m
+	UL_WHITE   := \033[4;37m
+	UL_ORANGE  := \033[4;38;5;214m
 
-		# italics
-		IT_STD     := \033[3m
-		IT_BLACK   := \033[3;30m
-		IT_RED     := \033[3;31m
-		IT_GREEN   := \033[3;32m
-		IT_YELLOW  := \033[3;33m
-		IT_BLUE    := \033[3;34m
-		IT_MAGENTA := \033[3;35m
-		IT_CYAN    := \033[3;36m
-		IT_WHITE   := \033[3;37m
-		IT_ORANGE  := \033[3;38;5;214m
+	# italics
+	IT_STD     := \033[3m
+	IT_BLACK   := \033[3;30m
+	IT_RED     := \033[3;31m
+	IT_GREEN   := \033[3;32m
+	IT_YELLOW  := \033[3;33m
+	IT_BLUE    := \033[3;34m
+	IT_MAGENTA := \033[3;35m
+	IT_CYAN    := \033[3;36m
+	IT_WHITE   := \033[3;37m
+	IT_ORANGE  := \033[3;38;5;214m
 
-		# bold and underline
-		BD_UL_STD     := \033[1;4m
-		BD_UL_BLACK   := \033[1;4;30m
-		BD_UL_RED     := \033[1;4;31m
-		BD_UL_GREEN   := \033[1;4;32m
-		BD_UL_YELLOW  := \033[1;4;33m
-		BD_UL_BLUE    := \033[1;4;34m
-		BD_UL_MAGENTA := \033[1;4;35m
-		BD_UL_CYAN    := \033[1;4;36m
-		BD_UL_WHITE   := \033[1;4;37m
+	# bold and underline
+	BD_UL_STD     := \033[1;4m
+	BD_UL_BLACK   := \033[1;4;30m
+	BD_UL_RED     := \033[1;4;31m
+	BD_UL_GREEN   := \033[1;4;32m
+	BD_UL_YELLOW  := \033[1;4;33m
+	BD_UL_BLUE    := \033[1;4;34m
+	BD_UL_MAGENTA := \033[1;4;35m
+	BD_UL_CYAN    := \033[1;4;36m
+	BD_UL_WHITE   := \033[1;4;37m
 
-		# bold and italics
-		BD_IT_STD     := \033[1;3m
-		BD_IT_BLACK   := \033[1;3;30m
-		BD_IT_RED     := \033[1;3;31m
-		BD_IT_GREEN   := \033[1;3;32m
-		BD_IT_YELLOW  := \033[1;3;33m
-		BD_IT_BLUE    := \033[1;3;34m
-		BD_IT_MAGENTA := \033[1;3;35m
-		BD_IT_CYAN    := \033[1;3;36m
-		BD_IT_WHITE   := \033[1;3;37m
+	# bold and italics
+	BD_IT_STD     := \033[1;3m
+	BD_IT_BLACK   := \033[1;3;30m
+	BD_IT_RED     := \033[1;3;31m
+	BD_IT_GREEN   := \033[1;3;32m
+	BD_IT_YELLOW  := \033[1;3;33m
+	BD_IT_BLUE    := \033[1;3;34m
+	BD_IT_MAGENTA := \033[1;3;35m
+	BD_IT_CYAN    := \033[1;3;36m
+	BD_IT_WHITE   := \033[1;3;37m
 
-		# italics and underline
-		IT_UL_STD     := \033[3;4m
-		IT_UL_BLACK   := \033[3;4;30m
-		IT_UL_RED     := \033[3;4;31m
-		IT_UL_GREEN   := \033[3;4;32m
-		IT_UL_YELLOW  := \033[3;4;33m
-		IT_UL_BLUE    := \033[3;4;34m
-		IT_UL_MAGENTA := \033[3;4;35m
-		IT_UL_CYAN    := \033[3;4;36m
-		IT_UL_WHITE   := \033[3;4;37m
-		IT_UL_ORANGE  := \033[3;4;38;5;214m
+	# italics and underline
+	IT_UL_STD     := \033[3;4m
+	IT_UL_BLACK   := \033[3;4;30m
+	IT_UL_RED     := \033[3;4;31m
+	IT_UL_GREEN   := \033[3;4;32m
+	IT_UL_YELLOW  := \033[3;4;33m
+	IT_UL_BLUE    := \033[3;4;34m
+	IT_UL_MAGENTA := \033[3;4;35m
+	IT_UL_CYAN    := \033[3;4;36m
+	IT_UL_WHITE   := \033[3;4;37m
+	IT_UL_ORANGE  := \033[3;4;38;5;214m
 
-		# bold, underline, and italics
-		BD_UL_IT_STD     := \033[1;3;4m
-		BD_UL_IT_BLACK   := \033[1;3;4;30m
-		BD_UL_IT_RED     := \033[1;3;4;31m
-		BD_UL_IT_GREEN   := \033[1;3;4;32m
-		BD_UL_IT_YELLOW  := \033[1;3;4;33m
-		BD_UL_IT_BLUE    := \033[1;3;4;34m
-		BD_UL_IT_MAGENTA := \033[1;3;4;35m
-		BD_UL_IT_CYAN    := \033[1;3;4;36m
-		BD_UL_IT_WHITE   := \033[1;3;4;37m
+	# bold, underline, and italics
+	BD_UL_IT_STD     := \033[1;3;4m
+	BD_UL_IT_BLACK   := \033[1;3;4;30m
+	BD_UL_IT_RED     := \033[1;3;4;31m
+	BD_UL_IT_GREEN   := \033[1;3;4;32m
+	BD_UL_IT_YELLOW  := \033[1;3;4;33m
+	BD_UL_IT_BLUE    := \033[1;3;4;34m
+	BD_UL_IT_MAGENTA := \033[1;3;4;35m
+	BD_UL_IT_CYAN    := \033[1;3;4;36m
+	BD_UL_IT_WHITE   := \033[1;3;4;37m
 
-		RESET := \033[0m
+	RESET := \033[0m
 
-	endif
 endif
 
 # Prefix Macro
