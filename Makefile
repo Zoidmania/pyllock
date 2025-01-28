@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.7.0
+# v0.7.1
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -457,7 +457,7 @@ sync:
 		$(VENV) -m piptools sync $(REQS)/main; \
 		$(VENV) -m pip check; \
 	elif [ "$(PYLLOCK_ENV)" = "dev" ]; then \
-		$(VENV) -m piptools sync $(REQS)/dev; \
+		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
 		$(VENV) -m pip check; \
 	else \
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
