@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.7.1
+# v0.7.2
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -454,7 +454,7 @@ sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
 	@if [ "$(PYLLOCK_ENV)" = "main" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
-		$(VENV) -m piptools sync $(REQS)/main; \
+		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/main; \
 		$(VENV) -m pip check; \
 	elif [ "$(PYLLOCK_ENV)" = "dev" ]; then \
 		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
