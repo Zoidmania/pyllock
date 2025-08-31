@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.7.2
+# v0.8.0
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -67,7 +67,7 @@ PYLLOCK_ENV ?= dev
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
 # this, it must be surrounded with quotes.
-PIPTOOLS_VERSION ?= >=7.4.0,<8
+PIPTOOLS_VERSION ?= >=7.5.0,<8
 
 ## ANSI Escapes
 # All high-intensity colors aren't boldable. The only high-intensity color used here is Orange.
@@ -490,7 +490,7 @@ venv:
 	@$(VENV) -m pip install --upgrade pip
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
-	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel
+	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel setuptools
 
 
 # Include extra functions for this project, if they exist.
