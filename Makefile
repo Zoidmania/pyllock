@@ -71,7 +71,7 @@ PIPTOOLS_VERSION ?= >=7.5.0,<8
 
 # Respect https://no-color.org/.
 NO_COLOR ?= 0
-ifneq ($(shell tput colors),"256")
+ifneq ($(shell tput colors),256)
 	INSUFFICIENT_COLORS := true
 else
 	INSUFFICIENT_COLORS := false
