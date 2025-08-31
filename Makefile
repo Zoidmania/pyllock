@@ -54,7 +54,7 @@ BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 VENV := $(BASEDIR)/venv/bin/python
 REQS := $(BASEDIR)/lock
 
-# By default GNU make loads what is already in `env`. This extends it to other files.
+# By default GNU make loads what is already in `env`. This extends that behavior to other files.
 PYLLOCK_ENV_FILE ?= .env
 ifneq ("$(wildcard $(PYLLOCK_ENV_FILE))","")
     $(eval include $(PYLLOCK_ENV_FILE))
@@ -69,15 +69,20 @@ PYLLOCK_ENV ?= dev
 # this, it must be surrounded with quotes.
 PIPTOOLS_VERSION ?= >=7.5.0,<8
 
+# Respect https://no-color.org/.
+NO_COLOR ?= 0
+ifneq ($(shell tput colors),"256")
+	INSUFFICIENT_COLORS := true
+else
+	INSUFFICIENT_COLORS := false
+endif
+# If NO_COLOR asserted or insufficient colors supported, disable colors.
+NO_COLOR_ENABLED := $(or $(findstring 1,$(NO_COLOR)),$(findstring true,$(INSUFFICIENT_COLORS)))
+
 ## ANSI Escapes
 # All high-intensity colors aren't boldable. The only high-intensity color used here is Orange.
 # For more info, see https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit.
-#
 # NB: When passing to 'echo', you shouldn't add quotes.
-
-# Respect https://no-color.org/.
-NO_COLOR ?= 0
-NO_COLOR_ENABLED := $(findstring 1,$(NO_COLOR))
 
 # basic
 BLACK   := $(if $(NO_COLOR_ENABLED),,\033[0;30m)
