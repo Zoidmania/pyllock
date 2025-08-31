@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.7.2
+# v0.8.0
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -54,7 +54,7 @@ BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 VENV := $(BASEDIR)/venv/bin/python
 REQS := $(BASEDIR)/lock
 
-# By default GNU make loads what is already in `env`. This extends it to other files.
+# By default GNU make loads what is already in `env`. This extends that behavior to other files.
 PYLLOCK_ENV_FILE ?= .env
 ifneq ("$(wildcard $(PYLLOCK_ENV_FILE))","")
     $(eval include $(PYLLOCK_ENV_FILE))
@@ -67,17 +67,22 @@ PYLLOCK_ENV ?= dev
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
 # this, it must be surrounded with quotes.
-PIPTOOLS_VERSION ?= >=7.4.0,<8
+PIPTOOLS_VERSION ?= >=7.5.0,<8
+
+# Respect https://no-color.org/.
+NO_COLOR ?= 0
+ifneq ($(shell tput colors),"256")
+	INSUFFICIENT_COLORS := true
+else
+	INSUFFICIENT_COLORS := false
+endif
+# If NO_COLOR asserted or insufficient colors supported, disable colors.
+NO_COLOR_ENABLED := $(or $(findstring 1,$(NO_COLOR)),$(findstring true,$(INSUFFICIENT_COLORS)))
 
 ## ANSI Escapes
 # All high-intensity colors aren't boldable. The only high-intensity color used here is Orange.
 # For more info, see https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit.
-#
 # NB: When passing to 'echo', you shouldn't add quotes.
-
-# Respect https://no-color.org/.
-NO_COLOR ?= 0
-NO_COLOR_ENABLED := $(findstring 1,$(NO_COLOR))
 
 # basic
 BLACK   := $(if $(NO_COLOR_ENABLED),,\033[0;30m)
@@ -490,7 +495,7 @@ venv:
 	@$(VENV) -m pip install --upgrade pip
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
-	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel
+	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel setuptools
 
 
 # Include extra functions for this project, if they exist.
