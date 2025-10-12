@@ -67,7 +67,7 @@ PYLLOCK_ENV ?= dev
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
 # this, it must be surrounded with quotes.
-PIPTOOLS_VERSION ?= >=7.5.0,<8
+PIPTOOLS_VERSION ?= >=7.5.1,<8
 
 # Respect https://no-color.org/.
 NO_COLOR ?= 0
