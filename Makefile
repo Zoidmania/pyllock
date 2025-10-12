@@ -51,7 +51,6 @@ endif
 ## Directory and Env Helpers
 
 BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
-REQS := $(BASEDIR)/lock
 
 # By default GNU make loads what is already in `env`. This extends that behavior to other files.
 PYLLOCK_ENV_FILE ?= .env
@@ -63,6 +62,7 @@ PYLLOCK_PYTHON ?= /usr/bin/env python3
 PYLLOCK_NO_VENV ?= 0
 PYLLOCK_VENV_PREFIX ?= "$(shell basename $(BASEDIR))"
 PYLLOCK_ENV ?= dev
+PYLLOCK_LOCK_DIR ?= $(BASEDIR)/lock
 INTERPRETER := $(BASEDIR)/venv/bin/python
 
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
@@ -473,12 +473,12 @@ install: sync
 
 .PHONY: lock # Create prod and dev lockfiles from pyproject.toml.
 lock:
-	@$(shell mkdir -p $(REQS))
+	@$(shell mkdir -p $(PYLLOCK_LOCK_DIR))
 
 	@if $(INTERPRETER) -c "$$PROD_DEPS_ARE_DEFINED"; then \
 		echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"; \
 		$(INTERPRETER) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
-			-o $(REQS)/main $(BASEDIR)/pyproject.toml; \
+			-o $(PYLLOCK_LOCK_DIR)/main $(BASEDIR)/pyproject.toml; \
 	else \
 		echo "$P $(BD_RED)No base dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
 		exit; \
@@ -487,7 +487,7 @@ lock:
 	@if $(INTERPRETER) -c "$$DEV_DEPS_ARE_DEFINED"; then \
 		echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"; \
 		$(INTERPRETER) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
-			-o $(REQS)/dev $(BASEDIR)/pyproject.toml; \
+			-o $(PYLLOCK_LOCK_DIR)/dev $(BASEDIR)/pyproject.toml; \
 	else \
 		echo "$P $(BD_YELLOW)No dev dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_YELLOW)! Skipping!$(RESET)"; \
 	fi
@@ -495,7 +495,7 @@ lock:
 	@if $(INTERPRETER) -c "$$TEST_DEPS_ARE_DEFINED"; then \
 		echo "$P $(BD_WHITE)Locking test dependencies...$(RESET)"; \
 		$(INTERPRETER) -m piptools compile -q --extra test --upgrade --resolver backtracking --no-strip-extras \
-			-o $(REQS)/test $(BASEDIR)/pyproject.toml; \
+			-o $(PYLLOCK_LOCK_DIR)/test $(BASEDIR)/pyproject.toml; \
 	else \
 		echo "$P $(BD_YELLOW)No test dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_YELLOW)! Skipping!$(RESET)"; \
 	fi
@@ -524,6 +524,7 @@ show-env:
 	@echo "PYLLOCK_ENV=$(PYLLOCK_ENV)"
 	@echo "PYLLOCK_PYTHON=$(PYLLOCK_PYTHON)"
 	@echo "PYLLOCK_VENV_PREFIX=$(PYLLOCK_VENV_PREFIX)"
+	@echo "PYLLOCK_LOCK_DIR=$(PYLLOCK_LOCK_DIR)"
 	@echo "PIPTOOLS_VERSION=$(PIPTOOLS_VERSION)"
 	@echo "NO_COLOR=$(NO_COLOR)"
 
@@ -531,24 +532,24 @@ show-env:
 sync:
 	@if [ "$(PYLLOCK_ENV)" = "production" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
 		echo "$P $(BD_WHITE)Syncing prod dependencies to venv...$(RESET)"; \
-        if [ -f $(REQS)/main ]; then \
-			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(REQS)/main; \
+        if [ -f $(PYLLOCK_LOCK_DIR)/main ]; then \
+			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/main; \
 			$(INTERPRETER) -m pip check; \
         else \
             echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/main$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "development" ] || [ "$(PYLLOCK_ENV)" = "dev" ]; then \
 		echo "$P $(BD_WHITE)Syncing dev dependencies to venv...$(RESET)"; \
-        if [ -f $(REQS)/dev ]; then \
-			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
+        if [ -f $(PYLLOCK_LOCK_DIR)/dev ]; then \
+			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/dev; \
 			$(INTERPRETER) -m pip check; \
         else \
             echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/dev$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "testing" ] || [ "$(PYLLOCK_ENV)" = "test" ]; then \
 		echo "$P $(BD_WHITE)Syncing test dependencies to venv...$(RESET)"; \
-        if [ -f $(REQS)/dev ]; then \
-			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(REQS)/test; \
+        if [ -f $(PYLLOCK_LOCK_DIR)/dev ]; then \
+			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/test; \
 			$(INTERPRETER) -m pip check; \
 		else \
             echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/test$(RESET)$(BD_RED)! Aborting!$(RESET)"; \

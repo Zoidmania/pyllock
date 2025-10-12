@@ -101,10 +101,11 @@ Pyllock's recipes are intended to be run _serially_. Parallel execution is disab
 | Variable              | Value      | Affected Commands                | Usage |
 |-----------------------|------------|----------------------------------|-------|
 | `PYLLOCK_ENV_FILE`    | path       | all                              | Specify a path to a `.env` file to use. By default, this is `$PWD/.env`. |
-| `PYLLOCK_ENV`         | str        | `sync`, `sync`/`install`         | Determines whether this environment is "dev", "test", or "prod" ([DTAP paradigm](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production)). Defaults to "dev". |
+| `PYLLOCK_ENV`         | str        | `lock`, `sync`/`install`         | Determines whether this environment is "dev", "test", or "prod" ([DTAP paradigm](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production)). Defaults to "dev". |
 | `PYLLOCK_PYTHON`      | path       | `venv`                           | Set to a path to an alternate Python interpreter. |
 | `PYLLOCK_VENV_PREFIX` | str        | `venv`                           | Set an alternate prompt prefix shown when activating the venv. Defaults to the name of the parent directory to your project. |
 | `PYLLOCK_NO_VENV`     | `0` or `1` | all                              | Skip virtual environments altogether. Set to `1` to enable. Use in conjunction with `PYLLOCK_PYTHON` to specify an interpreter, or the default on on `$PATH` will be used. Useful for containerized deployments where using a venv may be redundant. |
+| `PYLLOCK_LOCK_DIR`    | path       | `lock`, `sync`/`install`         | Specify a directory to emit lockfiles. Defaults to `lock/` (relative to the Pyllock Makefile).
 | `PIPTOOLS_VERSION`    | str        | `venv`, `lock`, `sync`/`install` | Override the pinned `pip-tools` version. Example: `">=7.5.1,<8"` Defaults to latest supported version. |
 | `NO_COLOR`            | `0` or `1` | all                              | Respects the [`NO_COLOR`](https://no-color.org/) community standard. Set to `1` to enable. If your shell doesn't support the necessary colors, this is set automatically. |
 
