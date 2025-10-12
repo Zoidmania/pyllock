@@ -94,7 +94,7 @@ alias act="source venv/bin/activate"
 
 ### Parallel Execution
 
-Pyllock's recipes are intended to be run _serially_. Parallel execution is disabled.
+Pyllock's recipes are intended to be run _serially_. Parallel `make` execution is disabled.
 
 ### Optional Environment Variables
 
