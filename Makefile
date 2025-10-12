@@ -431,6 +431,10 @@ lock:
 	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
 		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
 
+	@echo "$P $(BD_WHITE)Locking test dependencies...$(RESET)"
+	@$(VENV) -m piptools compile -q --extra test --upgrade --resolver backtracking --no-strip-extras \
+		-o $(REQS)/test $(BASEDIR)/pyproject.toml
+
 .PHONY: pyproject # Create a boilerplate pyproject.toml file.
 pyproject:
 	@if [ ! -f $(BASEDIR)/pyproject.toml ]; then \
