@@ -51,7 +51,7 @@ endif
 ## Directory and Env Helpers
 
 BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
-VENV := $(BASEDIR)/venv/bin/python
+INTERPRETER := $(BASEDIR)/venv/bin/python
 REQS := $(BASEDIR)/lock
 
 # By default GNU make loads what is already in `env`. This extends that behavior to other files.
@@ -445,7 +445,7 @@ export TEST_DEPS_ARE_DEFINED
 .PHONY: build # Build the Python application.
 build:
 	@echo "$P $(BD_WHITE)Building package distribution...$(RESET)"
-	@$(VENV) -m build
+	@$(INTERPRETER) -m build
 
 .PHONY: clean # Remove venv, egg-info, and dist.
 clean: rm-venv clean-build
@@ -474,26 +474,26 @@ install: sync
 lock:
 	@$(shell mkdir -p $(REQS))
 
-	@if $(VENV) -c "$$PROD_DEPS_ARE_DEFINED"; then \
+	@if $(INTERPRETER) -c "$$PROD_DEPS_ARE_DEFINED"; then \
 		echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"; \
-		$(VENV) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
+		$(INTERPRETER) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
 			-o $(REQS)/main $(BASEDIR)/pyproject.toml; \
 	else \
 		echo "$P $(BD_RED)No base dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
 		exit; \
 	fi
 
-	@if $(VENV) -c "$$DEV_DEPS_ARE_DEFINED"; then \
+	@if $(INTERPRETER) -c "$$DEV_DEPS_ARE_DEFINED"; then \
 		echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"; \
-		$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
+		$(INTERPRETER) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
 			-o $(REQS)/dev $(BASEDIR)/pyproject.toml; \
 	else \
 		echo "$P $(BD_YELLOW)No dev dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_YELLOW)! Skipping!$(RESET)"; \
 	fi
 
-	@if $(VENV) -c "$$TEST_DEPS_ARE_DEFINED"; then \
+	@if $(INTERPRETER) -c "$$TEST_DEPS_ARE_DEFINED"; then \
 		echo "$P $(BD_WHITE)Locking test dependencies...$(RESET)"; \
-		$(VENV) -m piptools compile -q --extra test --upgrade --resolver backtracking --no-strip-extras \
+		$(INTERPRETER) -m piptools compile -q --extra test --upgrade --resolver backtracking --no-strip-extras \
 			-o $(REQS)/test $(BASEDIR)/pyproject.toml; \
 	else \
 		echo "$P $(BD_YELLOW)No test dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_YELLOW)! Skipping!$(RESET)"; \
@@ -531,24 +531,24 @@ sync:
 	@if [ "$(PYLLOCK_ENV)" = "production" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
 		echo "$P $(BD_WHITE)Syncing prod dependencies to venv...$(RESET)"; \
         if [ -f $(REQS)/main ]; then \
-			$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/main; \
-			$(VENV) -m pip check; \
+			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(REQS)/main; \
+			$(INTERPRETER) -m pip check; \
         else \
             echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/main$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "development" ] || [ "$(PYLLOCK_ENV)" = "dev" ]; then \
 		echo "$P $(BD_WHITE)Syncing dev dependencies to venv...$(RESET)"; \
         if [ -f $(REQS)/dev ]; then \
-			$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
-			$(VENV) -m pip check; \
+			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
+			$(INTERPRETER) -m pip check; \
         else \
             echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/dev$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "testing" ] || [ "$(PYLLOCK_ENV)" = "test" ]; then \
 		echo "$P $(BD_WHITE)Syncing test dependencies to venv...$(RESET)"; \
         if [ -f $(REQS)/dev ]; then \
-			$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/test; \
-			$(VENV) -m pip check; \
+			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(REQS)/test; \
+			$(INTERPRETER) -m pip check; \
 		else \
             echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/test$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
         fi; \
@@ -577,17 +577,17 @@ usage:
 .PHONY: venv # Create or update a venv.
 venv:
 	@# We need to grab the Python interpreter on $$PATH to create the venv first, so don't use
-	@# $$(VENV) here.
+	@# $$(INTERPRETER) here.
 	@if [ ! -d $(BASEDIR)/venv ]; then \
 		echo "$P $(BD_WHITE)Creating virtual environment...$(RESET)"; \
 		$(PYLLOCK_PYTHON) -m venv $(BASEDIR)/venv --prompt=$(PYLLOCK_VENV_PREFIX); \
 	fi
 
 	@echo "$P $(BD_WHITE)Upgrading pip...$(RESET)"
-	@$(VENV) -m pip install --upgrade pip
+	@$(INTERPRETER) -m pip install --upgrade pip
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
-	@$(VENV) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel setuptools
+	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel setuptools
 
 
 # Include extra functions for this project, if they exist.
