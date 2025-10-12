@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.8.0
+# v0.9.0
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
