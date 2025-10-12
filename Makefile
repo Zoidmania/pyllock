@@ -192,6 +192,7 @@ define PYPROJECT_TOML
 # If any strings are left empty, 'make lock' will fail.
 # To debug, run 'pip install .' to emit errors.
 [project]
+
 # Package names should follow PEP 423.
 name = \"\"
 version = \"\"
@@ -210,6 +211,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+
 dev = [
 
 ]
@@ -219,18 +221,22 @@ test = [
 ]
 
 [project.urls]
+
 Repository = \"\"
 
 # https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/#fallback-behaviour
 [build-system]
+
 requires = [\"setuptools\", \"wheel\"]
 build-backend = \"setuptools.build_meta\"
 
 [tool.setuptools]
+
 include-package-data = true
 
 # https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
 [tool.setuptools.packages.find]
+
 where = []
 include = []
 exclude = []
@@ -238,6 +244,7 @@ namespaces = true # true by default
 
 # https://github.com/jazzband/pip-tools?tab=readme-ov-file#configuration
 #[tool.pip-tools]
+#
 #index-url = https://example.com
 #extra-index-url = https://another-example.com
 #dry-run = true
