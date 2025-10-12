@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/github/license/Zoidmania/pyllock)](https://github.com/Zoidmania/pyllock/blob/main/LICENSE)
 [![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Pyllock)](https://github.com/Zoidmania/pyllock/releases)
-[![Pronounciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)](#)
+[![Pronunciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)](#)
 [![Footgun?](https://img.shields.io/badge/jury's%20out-red?style=flat&label=footgun%3F)](https://news.ycombinator.com/item?id=17393292)
 
 Pyllock is a simple, probably stupid Python project manager. It's a Makefile being used as a command
@@ -46,15 +46,15 @@ Generally, my workflow to bootstrap a project is as follows.
     - See [Optional Environment Variables](#optional-environment-variables) for options.
 1. Fill out `pyproject.toml` with minimum metadata and dependencies required for the project.
 1. Run `make lock` to generate lock files.
-    - The lock files will appear at `<project-root>/lock/[main|dev]`.
-1. Install the dependencies to the virtual environemtn with `make install` (an alias for
+    - The lock files will appear at `<project-root>/lock/[prod|dev|test]`.
+1. Install the dependencies to the virtual environment with `make install` (an alias for
    `make sync`).
     - This target installs dependencies defined in the _lock files_, not directly from
       `pyproject.toml`.
 
 ### Adding or Removing Dependencies
 
-If one wants to _add_ or _remove_ dependencies to or from an existing project, simply edit
+If you want to _add_ or _remove_ dependencies to or from an existing project, simply edit
 `pyproject.toml`. Then:
 
 ```bash
@@ -92,26 +92,39 @@ in _your_ shell session. I have a shell alias that activates the venv in the cur
 alias act="source venv/bin/activate"
 ```
 
-### Parallel Excution
+### Parallel Execution
 
-Pyllock's recipes are inteded to be run _serially_. Parallel execution is disabled.
+Pyllock's recipes are intended to be run _serially_. Parallel `make` execution is disabled.
 
-### Optional Environment Variables
+### Environment Variables
 
-| Variable              | Affected Commands | Usage |
-|-----------------------|-------------------|-------|
-| `PYLLOCK_PYTHON`      | `venv`            | Set to a path to an alternate Python interpreter. |
-| `PYLLOCK_VENV_PREFIX` | `venv`            | Set an alternate prompt prefix shown when activating the venv. Defaults to the name of the parent directory to your project. |
-| `PYLLOCK_ENV`         | `sync`/`install`  | Determines whether this environment is "prod" or "dev". Defaults to "dev". |
+| Variable                   | Value (default*)          | Affected Commands      | Usage |
+|----------------------------|---------------------------|------------------------|-------|
+| `PYLLOCK_ENV`              | `dev`*, `test`, or `prod` | `lock`, `sync`         | Determines the environment ([DTAP paradigm](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production), though "acceptance" doesn't make sense here). |
+| `PYLLOCK_ENV_FILE`         | `.env`                    | all                    | Specify a path to a `.env` file to use. |
+| `PYLLOCK_BASE_PYTHON`      | `/usr/bin/env python3`    | all                    | Set to a path to a Python interpreter. If `PYLLOCK_NO_VENV` is set, Pyllock will directly manage that interpreter. Otherwise, Pyllock will create a virtual environment at `PYLLOCK_VENV_PATH` using this interpreter. |
+| `PYLLOCK_NO_VENV`          | `0`* or `1`               | `venv`, `lock`, `sync` | Skip virtual environments altogether. Set to `1` to enable. Use in conjunction with `PYLLOCK_PYTHON` to specify an interpreter, or the default on on `$PATH` will be used. Useful for containerized deployments where using a venv may be redundant. |
+| `PYLLOCK_VENV_NAME`        | `venv`                    | `venv`, `lock`, `sync` | The virtual environment's path relative to the Pyllock Makefile. Defaults to `venv` (though some folks prefer `.venv`). |
+| `PYLLOCK_VENV_PREFIX`      | str                       | `venv`                 | Set an alternate prompt prefix shown when activating the venv. Defaults to the name of the parent directory to your project. |
+| `PYLLOCK_LOCK_DIR`         | `lock`                    | `lock`, `sync`         | Specify a directory to emit lockfiles. |
+| `PYLLOCK_PIPTOOLS_VERSION` | `>=7.5.1,<8`              | `venv`, `lock`, `sync` | Override the pinned `pip-tools` version. |
+| `NO_COLOR`                 | `0`*or `1`                | all                    | Respects the [`NO_COLOR`](https://no-color.org/) community standard. Set to `1` to enable. If your shell doesn't support the necessary colors, this is set automatically. |
+
+If you define values in multiple places, sometimes it can be difficult to see what the state Pyllock
+is using _actually is_. Pyllock provides a command to view this state:
+
+```bash
+make show
+```
 
 ### Production
 
 In production, you don't want to install your development-only dependencies. That's why we maintain
-separate `main` and `dev` lock files.
+separate `main`, `dev`, and `test` lock files; one for each deployment environment.
 
 To ensure that `make sync` (a.k.a. `make install`) only installs the main dependencies, set the
-environment variable `PYLLOCK_ENV` to `"main"` or `"prod"`. If unset, Pyllock will default to
-`"dev"`, which will install the `dev` lock file.
+environment variable `PYLLOCK_ENV` to `"prod"`. Similarly, for testing, set it to `"test"`. If
+unset, Pyllock will default to `"dev"`, which will install the `dev` lock file.
 
 ## Requirements
 
@@ -121,11 +134,13 @@ tested with other shells. It also expects the following programs are available:
 - GNU `make`
     - Tested with GNU Make 4.3.
     - Doesn't work with "standard" `make`. Pyllock relies on features of GNU Make.
-- `python3`
+- `python3.11+`
     - You need to have Python available to create the virtual environment. Any version of Python
-      that includes the `venv` module (**introduced in Python 3.3**) will work. The initial Python
-      instance used to create your project's virtual environment **will not be modified**; only the
-      project's virtual environment will be modified.
+      that includes both the `venv` and `tomllib` modules (**introduced in Python 3.3 and 3.11,
+      respectively**) will work.
+          - If you're using a virtual environment, the initial Python instance used to create your
+            virtual environment **will not be modified**; only _your_ virtual environment will be
+            modified.
     - To specify a Python interpreter that isn't the default one on your `$PATH`, set the
       environment variable `PYLLOCK_PYTHON` to the interpreter of your choice. This variable is only
       used to create the venv.
@@ -136,9 +151,11 @@ file for you to get started). Namely:
 
 - Specify your main dependencies in the `dependencies` list under the `[project]` section using
   [PEP 508][pep-508]-style strings.
-- Place the extra development dependencies (like linters, the test suite, etc) in a list called
+- Place the extra development dependencies (like linters, debuggers, etc) in a list called
   `dev` in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style
   strings.
+- Place the extra testing dependencies (like linters, the test suite, etc) in a list called `test`
+  in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style strings.
 - Unlike `requirements.txt`, you _don't_ need to specify _all_ dependencies, only the ones your
   project needs _directly_. Don't specify dependencies of your dependencies in `pyproject.toml`.
 
