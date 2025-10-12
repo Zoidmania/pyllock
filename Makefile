@@ -198,7 +198,7 @@ name = \"\"
 version = \"\"
 description = \"\"
 authors = [
-${SP}${SP}${SP}${SP}{name = \"\", email = \"\"},
+    {name = \"\", email = \"\"},
 ]
 readme = \"readme.md\"
 # For example, \">= 3.10\" or "== 3.11".
@@ -250,6 +250,9 @@ namespaces = true # true by default
 #dry-run = true
 #annotate = true
 endef
+# Export to variable for shell execution. This way, leading whitespace is preserved.
+# See: https://stackoverflow.com/a/7287289
+export PYPROJECT_TOML
 
 # All of the spacing is designed to make the help text readable on a 80-column-width console.
 define HELP
@@ -445,7 +448,7 @@ lock:
 .PHONY: pyproject # Create a boilerplate pyproject.toml file.
 pyproject:
 	@if [ ! -f $(BASEDIR)/pyproject.toml ]; then \
-		echo "$(PYPROJECT_TOML)" > $(BASEDIR)/pyproject.toml; \
+		echo "$$PYPROJECT_TOML" > $(BASEDIR)/pyproject.toml; \
 		echo "$P Created $(BD_IT_BLUE)project.toml$(RESET) file in project root from template."; \
 	else \
 		echo "$P $(BD_IT_BLUE)project.toml$(RESET) $(BD_RED)already exists!$(RESET) $(BD_YELLOW)Skipping creating from template!$(RESET)"; \
