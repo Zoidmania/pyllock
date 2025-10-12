@@ -480,7 +480,7 @@ lock:
 			-o $(REQS)/main $(BASEDIR)/pyproject.toml; \
 	else \
 		echo "$P $(BD_RED)No base dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
-		exit
+		exit; \
 	fi
 
 	@if $(VENV) -c "$$DEV_DEPS_ARE_DEFINED"; then \
