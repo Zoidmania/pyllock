@@ -214,6 +214,10 @@ dev = [
 
 ]
 
+test = [
+
+]
+
 [project.urls]
 Repository = \"\"
 
@@ -458,11 +462,14 @@ show-env:
 sync:
 	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
 
-	@if [ "$(PYLLOCK_ENV)" = "main" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
+	@if [ "$(PYLLOCK_ENV)" = "production" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
 		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/main; \
 		$(VENV) -m pip check; \
-	elif [ "$(PYLLOCK_ENV)" = "dev" ]; then \
+	elif [ "$(PYLLOCK_ENV)" = "development" ] || [ "$(PYLLOCK_ENV)" = "dev" ]; then \
 		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
+		$(VENV) -m pip check; \
+	elif [ "$(PYLLOCK_ENV)" = "testing" ] || [ "$(PYLLOCK_ENV)" = "test" ]; then \
+		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/test; \
 		$(VENV) -m pip check; \
 	else \
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
