@@ -54,7 +54,7 @@ Generally, my workflow to bootstrap a project is as follows.
 
 ### Adding or Removing Dependencies
 
-If one wants to _add_ or _remove_ dependencies to or from an existing project, simply edit
+If you want to _add_ or _remove_ dependencies to or from an existing project, simply edit
 `pyproject.toml`. Then:
 
 ```bash
@@ -98,25 +98,33 @@ Pyllock's recipes are intended to be run _serially_. Parallel execution is disab
 
 ### Optional Environment Variables
 
-| Variable              | Value      | Affected Commands                | Usage |
-|-----------------------|------------|----------------------------------|-------|
-| `PYLLOCK_ENV_FILE`    | path       | all                              | Specify a path to a `.env` file to use. By default, this is `$PWD/.env`. |
-| `PYLLOCK_ENV`         | str        | `lock`, `sync`/`install`         | Determines whether this environment is "dev", "test", or "prod" ([DTAP paradigm](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production)). Defaults to "dev". |
-| `PYLLOCK_PYTHON`      | path       | `venv`                           | Set to a path to an alternate Python interpreter. |
-| `PYLLOCK_VENV_PREFIX` | str        | `venv`                           | Set an alternate prompt prefix shown when activating the venv. Defaults to the name of the parent directory to your project. |
-| `PYLLOCK_NO_VENV`     | `0` or `1` | all                              | Skip virtual environments altogether. Set to `1` to enable. Use in conjunction with `PYLLOCK_PYTHON` to specify an interpreter, or the default on on `$PATH` will be used. Useful for containerized deployments where using a venv may be redundant. |
-| `PYLLOCK_LOCK_DIR`    | path       | `lock`, `sync`/`install`         | Specify a directory to emit lockfiles. Defaults to `lock/` (relative to the Pyllock Makefile).
-| `PIPTOOLS_VERSION`    | str        | `venv`, `lock`, `sync`/`install` | Override the pinned `pip-tools` version. Example: `">=7.5.1,<8"` Defaults to latest supported version. |
-| `NO_COLOR`            | `0` or `1` | all                              | Respects the [`NO_COLOR`](https://no-color.org/) community standard. Set to `1` to enable. If your shell doesn't support the necessary colors, this is set automatically. |
+| Variable              | Value      | Affected Commands      | Usage |
+|-----------------------|------------|------------------------|-------|
+| `PYLLOCK_ENV`         | str        | `lock`, `sync`         | Determines whether this environment is `"dev"`, `"test"`, or `"prod"` ([DTAP paradigm](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production)). Defaults to `"dev"`. |
+| `PYLLOCK_ENV_FILE`    | path       | all                    | Specify a path to a `.env` file to use. By default, this is `.env`, relative to the Pyllock Makefile. |
+| `PYLLOCK_PYTHON`      | path       | all                    | Set to a path to a Python interpreter; by default this is `/usr/bin/env python3`. If `PYLLOCK_NO_VENV` is set, Pyllock will directly manage that interpreter. Otherwise, Pyllock will create a virtual environment at `PYLLOCK_VENV_PATH` using this interpreter. |
+| `PYLLOCK_VENV_NAME`   | rltv path  | `venv`, `lock`, `sync` | The name of the virtual environment's directory. Defaults to `venv`; some folks prefer `.venv`. **This value is a path relative to the Pyllock Makefile.** |
+| `PYLLOCK_VENV_PREFIX` | str        | `venv`                 | Set an alternate prompt prefix shown when activating the venv. Defaults to the name of the parent directory to your project. |
+| `PYLLOCK_NO_VENV`     | `0` or `1` | `venv`, `lock`, `sync` | Skip virtual environments altogether. Set to `1` to enable. Use in conjunction with `PYLLOCK_PYTHON` to specify an interpreter, or the default on on `$PATH` will be used. Useful for containerized deployments where using a venv may be redundant. |
+| `PYLLOCK_LOCK_DIR`    | path       | `lock`, `sync`         | Specify a directory to emit lockfiles. Defaults to `lock/` (relative to the Pyllock Makefile).
+| `PIPTOOLS_VERSION`    | str        | `venv`, `lock`, `sync` | Override the pinned `pip-tools` version. Example: `">=7.5.1,<8"` Defaults to latest supported version. |
+| `NO_COLOR`            | `0` or `1` | all                    | Respects the [`NO_COLOR`](https://no-color.org/) community standard. Set to `1` to enable. If your shell doesn't support the necessary colors, this is set automatically. |
+
+If you define values in multiple places, sometimes it can be difficult to see what the state Pyllock
+is using actually is. Pyllock provides a command to view this state:
+
+```bash
+make show
+```
 
 ### Production
 
 In production, you don't want to install your development-only dependencies. That's why we maintain
-separate `main` and `dev` lock files.
+separate `main`, `dev`, and `test` lock files; one for each deployment environment.
 
 To ensure that `make sync` (a.k.a. `make install`) only installs the main dependencies, set the
-environment variable `PYLLOCK_ENV` to `"main"` or `"prod"`. If unset, Pyllock will default to
-`"dev"`, which will install the `dev` lock file.
+environment variable `PYLLOCK_ENV` to `"prod"`. Similarly, for testing, set it to `"test"`. If
+unset, Pyllock will default to `"dev"`, which will install the `dev` lock file.
 
 ## Requirements
 

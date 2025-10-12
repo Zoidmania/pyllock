@@ -60,10 +60,16 @@ endif
 
 PYLLOCK_PYTHON ?= /usr/bin/env python3
 PYLLOCK_NO_VENV ?= 0
+PYLLOCK_VENV_NAME ?= "venv"
 PYLLOCK_VENV_PREFIX ?= "$(shell basename $(BASEDIR))"
 PYLLOCK_ENV ?= dev
 PYLLOCK_LOCK_DIR ?= $(BASEDIR)/lock
-INTERPRETER := $(BASEDIR)/venv/bin/python
+# If NO_VENV is set, use the base interpreter. Otherwise, use the venv's interpreter.
+ifeq ($(PYLLOCK_NO_VENV),1)
+	INTERPRETER := $(PYLLOCK_PYTHON)
+else
+	INTERPRETER := $(BASEDIR)/$(PYLLOCK_VENV_NAME)/bin/python
+endif
 
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
@@ -258,7 +264,8 @@ For more details, see $(UL_BLUE)https://github.com/Zoidmania/pyllock$(RESET).
 
 This Makefile manages your Python project's dependencies with minimal tooling.
 It creates virtual environments by default (but it doesn't have to). It $(BD_UL_IT_STD)does not$(RESET)
-activate virtual environments for you! You must activate your virtual environment with:
+activate virtual environments for you! You must activate your virtual environment
+with:
 
     $(BD_IT_WHITE)cd /path/to/project/$(BD_RESET)
     $(BD_IT_WHITE)source venv/bin/activate$(BD_RESET)
@@ -273,6 +280,10 @@ The following commands are available.
 
 $(BD_GREEN)build$(RESET)
     Builds a distribution of your Python project, according to $(BD_IT_BLUE)pyproject.toml$(RESET).
+
+$(BD_GREEN)bootstrap$(RESET)
+    Upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary dependencies of
+    $(BD_STD)Pyllock$(RESET). This command $(BD_IT_STD)does not$(RESET) recreate the venv if one already exists.
 
 $(BD_GREEN)clean$(RESET)
     Deletes the project's virtual environment, any $(BD_IT_BLUE).egg-info$(RESET) metadata, and
@@ -303,7 +314,7 @@ $(BD_GREEN)refresh$(RESET)
     A convenience function that runs $(BD_GREEN)clean$(RESET), $(BD_GREEN)venv$(RESET), and $(BD_GREEN)sync$(RESET), in that order. Use
     to completely rebuild a virtual environment.
 
-$(BD_GREEN)show-env$(RESET)
+$(BD_GREEN)show$(RESET)
     Print evaluated environment variables that $(BD_STD)Pyllock$(RESET) is aware of.
 
 $(BD_GREEN)sync$(RESET)
@@ -325,11 +336,13 @@ $(BD_GREEN)usage$(RESET)
     Prints simple usage text. Default behavior.
 
 $(BD_GREEN)venv$(RESET)
-    Creates a virtual environment at the root of the project, using the Python
-    interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the default interpreter on the
-    $(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary
-    dependencies of $(BD_STD)Pyllock$(RESET). This command $(BD_IT_STD)does not$(RESET) recreate the venv if one
-    already exists.
+    If $(IT_ORANGE)PYLLOCK_NO_VENV$(RESET) isn't set, creates a virtual environment at the root of
+    the project, using the Python interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the
+    default interpreter on the $(IT_ORANGE)PATH$(RESET). If $(IT_ORANGE)PYLLOCK_NO_VENV$(RESET) is set, no virtual
+    environment is created.
+
+    Either way, $(BD_GREEN)bootstrap$(RESET) is called at the end of this command to ensure required
+    tools are installed.
 
     By default, the venv's prefix is the name of the parent directory of the
     project directory. This can be overridden by setting $(IT_ORANGE)PYLLOCK_VENV_PREFIX$(RESET).
@@ -369,7 +382,7 @@ You can specify any environment variable $(BD_STD)Pyllock$(RESET) uses can be se
 either the default of $(BD_IT_BLUE).env$(RESET) or a file given at $(IT_ORANGE)PYLLOCK_ENV_FILE$(RESET). You cam view
 these values with:
 
-    $(BD_IT_WHITE)make show-env$(RESET)
+    $(BD_IT_WHITE)make show$(RESET)
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Extra Functions$(RESET) $(BD_BLUE)##$(RESET)
 
@@ -448,6 +461,14 @@ build:
 	@echo "$P $(BD_WHITE)Building package distribution...$(RESET)"
 	@$(INTERPRETER) -m build
 
+.PHONY: bootstrap # Update pip and install pip-tools.
+bootstrap:
+	@echo "$P $(BD_WHITE)Upgrading pip...$(RESET)"
+	@$(INTERPRETER) -m pip install --upgrade pip
+
+	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
+	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel setuptools
+
 .PHONY: clean # Remove venv, egg-info, and dist.
 clean: rm-venv clean-build
 
@@ -516,14 +537,15 @@ refresh: clean venv sync
 .PHONY: rm-venv # Remove venv.
 rm-venv:
 	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
-	@rm -rf $(BASEDIR)/venv
+	@rm -rf $(BASEDIR)/$(PYLLOCK_VENV_NAME)
 
-.PHONY: show-env # Print evaluated environment variables that Pyllock is aware of.
-show-env:
+.PHONY: show # Print evaluated environment variables that Pyllock is aware of.
+show:
 	@echo "PYLLOCK_ENV_FILE=$(PYLLOCK_ENV_FILE)"
 	@echo "PYLLOCK_ENV=$(PYLLOCK_ENV)"
 	@echo "PYLLOCK_PYTHON=$(PYLLOCK_PYTHON)"
 	@echo "PYLLOCK_VENV_PREFIX=$(PYLLOCK_VENV_PREFIX)"
+	@echo "PYLLOCK_NO_VENV=$(PYLLOCK_NO_VENV)"
 	@echo "PYLLOCK_LOCK_DIR=$(PYLLOCK_LOCK_DIR)"
 	@echo "PIPTOOLS_VERSION=$(PIPTOOLS_VERSION)"
 	@echo "NO_COLOR=$(NO_COLOR)"
@@ -576,20 +598,20 @@ usage:
 	@echo "$$USAGE"
 	@grep -vE '^[[:space:]]' $(MAKEFILE_LIST) | grep -E '^.*:.* #' | sed -E 's/.PHONY:(.*):.*#(.*)/  \1###\2/' | sed -E 's/.PHONY: //g' | column -t -s '###'
 
+
 .PHONY: venv # Create or update a venv.
 venv:
-	@# We need to grab the Python interpreter on $$PATH to create the venv first, so don't use
-	@# $$(INTERPRETER) here.
-	@if [ ! -d $(BASEDIR)/venv ]; then \
+	@if [ "$(PYLLOCK_NO_VENV)" = 1 ]; then \
+		echo "$P $(BD_YELLOW)Virtual environment usage disabled because$(RESET) $(IT_ORANGE)PYLLOCK_NO_VENV$(RESET) $(BD_YELLOW)is set!$(RESET)"; \
+		echo "$P $(BD_YELLOW)Using environment of interpreter $(RESET) $(BD_IT_BLUE)$(INTERPRETER)$(RESET) $(BD_YELLOW)directly!$(RESET)"; \
+	elif [ ! -d $(BASEDIR)/$(PYLLOCK_VENV_NAME) ]; then \
+		# We need to grab the Python interpreter on $$PATH to create the venv first, so don't use
+		# $$(INTERPRETER) here.
 		echo "$P $(BD_WHITE)Creating virtual environment...$(RESET)"; \
-		$(PYLLOCK_PYTHON) -m venv $(BASEDIR)/venv --prompt=$(PYLLOCK_VENV_PREFIX); \
+		$(PYLLOCK_PYTHON) -m venv $(BASEDIR)/$(PYLLOCK_VENV_NAME) --prompt=$(PYLLOCK_VENV_PREFIX); \
 	fi
 
-	@echo "$P $(BD_WHITE)Upgrading pip...$(RESET)"
-	@$(INTERPRETER) -m pip install --upgrade pip
-
-	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
-	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel setuptools
+	$(MAKE) bootstrap --no-print-directory
 
 
 # Include extra functions for this project, if they exist.
