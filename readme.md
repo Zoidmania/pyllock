@@ -154,9 +154,8 @@ file for you to get started). Namely:
 - Place the extra development dependencies (like linters, debuggers, etc) in a list called
   `dev` in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style
   strings.
-- Place the extra development dependencies (like linters, the test suite, etc) in a list called
-  `test` in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style
-  strings.
+- Place the extra testing dependencies (like linters, the test suite, etc) in a list called `test`
+  in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style strings.
 - Unlike `requirements.txt`, you _don't_ need to specify _all_ dependencies, only the ones your
   project needs _directly_. Don't specify dependencies of your dependencies in `pyproject.toml`.
 
