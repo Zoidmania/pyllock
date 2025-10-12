@@ -183,10 +183,6 @@ P := "'$(BD_GREEN)'['$(WHITE)'Pyllock'$(BD_GREEN)']'$(RESET)'"
 
 ## Templates
 
-# It's possible to preserve leading spaces by making a variable and inserting a reference at
-# the beginning. Bad, but I don't know of a way around this.
-SP = " "
-
 define PYPROJECT_TOML
 # See: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
 # If any strings are left empty, 'make lock' will fail.
@@ -266,79 +262,79 @@ This manager creates virtual environments for your Python project and manages
 them with minimal tooling. It $(BD_UL_IT_STD)does not$(RESET) activate the environment for you! You
 must activate your virtual environment with:
 
-${SP}${SP}${SP}${SP}$(BD_IT_WHITE)cd /path/to/project/$(BD_RESET)
-${SP}${SP}${SP}${SP}$(BD_IT_WHITE)source venv/bin/activate$(BD_RESET)
+    $(BD_IT_WHITE)cd /path/to/project/$(BD_RESET)
+    $(BD_IT_WHITE)source venv/bin/activate$(BD_RESET)
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Commands$(RESET) $(BD_BLUE)##$(RESET)
 
 All commands are issued in the following format:
 
-${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
+    $(BD_IT_WHITE)make$(BD_RESET) $(BD_GREEN)<command>$(RESET)
 
 The following commands are available.
 
 $(BD_GREEN)build$(RESET)
-${SP}${SP}${SP}${SP}Builds a distribution of your Python project, according to $(BD_IT_BLUE)pyproject.toml$(RESET).
+    Builds a distribution of your Python project, according to $(BD_IT_BLUE)pyproject.toml$(RESET).
 
 $(BD_GREEN)clean$(RESET)
-${SP}${SP}${SP}${SP}Deletes the project's virtual environment, any $(BD_IT_BLUE).egg-info$(RESET) metadata, and
-${SP}${SP}${SP}${SP}build artifacts.
+    Deletes the project's virtual environment, any $(BD_IT_BLUE).egg-info$(RESET) metadata, and
+    build artifacts.
 
 $(BD_GREEN)clean-build$(RESET)
-${SP}${SP}${SP}${SP}Deletes any $(BD_IT_BLUE).egg-info$(RESET)'s, as well as the project's build artifacts by
-${SP}${SP}${SP}${SP}removing the 'dist/' directory.
+    Deletes any $(BD_IT_BLUE).egg-info$(RESET)'s, as well as the project's build artifacts by
+    removing the 'dist/' directory.
 
 $(BD_GREEN)help$(RESET)
-${SP}${SP}${SP}${SP}Prints this help text and exits. Default command.
+    Prints this help text and exits. Default command.
 
 $(BD_GREEN)init$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET) and $(BD_GREEN)pyproject$(RESET) in that order.
+    A convenience function that runs $(BD_GREEN)venv$(RESET) and $(BD_GREEN)pyproject$(RESET) in that order.
 
 $(BD_GREEN)install$(RESET)
-${SP}${SP}${SP}${SP}Alias for $(BD_GREEN)sync$(RESET).
+    Alias for $(BD_GREEN)sync$(RESET).
 
 $(BD_GREEN)lock$(RESET)
-${SP}${SP}${SP}${SP}Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET).
-${SP}${SP}${SP}${SP}Dependencies are $(BD_UL_IT_STD)not$(RESET) installed with this command.
+    Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$(RESET).
+    Dependencies are $(BD_UL_IT_STD)not$(RESET) installed with this command.
 
 $(BD_GREEN)pyproject$(RESET)
-${SP}${SP}${SP}${SP}Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the root of
-${SP}${SP}${SP}${SP}the project.
+    Generates a $(BD_IT_BLUE)pyproject.toml$(RESET) file from the standard template at the root of
+    the project.
 
 $(BD_GREEN)refresh$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)clean$(RESET), $(BD_GREEN)venv$(RESET), and $(BD_GREEN)sync$(RESET), in that order. Use
-${SP}${SP}${SP}${SP}to completely rebuild a virtual environment.
+    A convenience function that runs $(BD_GREEN)clean$(RESET), $(BD_GREEN)venv$(RESET), and $(BD_GREEN)sync$(RESET), in that order. Use
+    to completely rebuild a virtual environment.
 
 $(BD_GREEN)show-env$(RESET)
-${SP}${SP}${SP}${SP}Print evaluated environment variables that Pyllock is aware of.
+    Print evaluated environment variables that Pyllock is aware of.
 
 $(BD_GREEN)sync$(RESET)
-${SP}${SP}${SP}${SP}Syncs dependencies from the lock file to the virtual environment. Any new
-${SP}${SP}${SP}${SP}dependencies will be installed, and any removed dependencies will be
-${SP}${SP}${SP}${SP}uninstalled.
+    Syncs dependencies from the lock file to the virtual environment. Any new
+    dependencies will be installed, and any removed dependencies will be
+    uninstalled.
 
-${SP}${SP}${SP}${SP}By default, $(BD_UL_IT_STD)development$(RESET) dependencies are synced. Set $(IT_ORANGE)PYLLOCK_ENV$(RESET) to either
-${SP}${SP}${SP}${SP}$(BD_STD)'main'$(RESET) or $(BD_STD)'dev'$(RESET) to select between the two available dependency lists.
+    By default, $(BD_UL_IT_STD)development$(RESET) dependencies are synced. Set $(IT_ORANGE)PYLLOCK_ENV$(RESET) to either
+    $(BD_STD)'main'$(RESET) or $(BD_STD)'dev'$(RESET) to select between the two available dependency lists.
 
 $(BD_GREEN)update$(RESET)
-${SP}${SP}${SP}${SP}A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
-${SP}${SP}${SP}${SP}Suitable for running after adding, removing, or updating dependencies.
+    A convenience function that runs $(BD_GREEN)venv$(RESET), $(BD_GREEN)lock$(RESET), and $(BD_GREEN)sync$(RESET), in that order.
+    Suitable for running after adding, removing, or updating dependencies.
 
 $(BD_GREEN)upgrade-pyllock$(RESET)
-${SP}${SP}${SP}${SP}Updates Pyllock to the latest release version.
+    Updates Pyllock to the latest release version.
 
 $(BD_GREEN)usage$(RESET)
-${SP}${SP}${SP}${SP}Prints simple usage text. Default behavior.
+    Prints simple usage text. Default behavior.
 
 $(BD_GREEN)venv$(RESET)
-${SP}${SP}${SP}${SP}Creates a virtual environment at the root of the project, using the Python
-${SP}${SP}${SP}${SP}interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the default interpreter on the
-${SP}${SP}${SP}${SP}$(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary
-${SP}${SP}${SP}${SP}dependencies of Pyllock. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one
-${SP}${SP}${SP}${SP}already exists.
+    Creates a virtual environment at the root of the project, using the Python
+    interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the default interpreter on the
+    $(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary
+    dependencies of Pyllock. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one
+    already exists.
 
-${SP}${SP}${SP}${SP}By default, the venv's prefix is the name of the parent directory of the
-${SP}${SP}${SP}${SP}project directory. This can be overridden by setting $(IT_ORANGE)PYLLOCK_VENV_PREFIX$(RESET).
+    By default, the venv's prefix is the name of the parent directory of the
+    project directory. This can be overridden by setting $(IT_ORANGE)PYLLOCK_VENV_PREFIX$(RESET).
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Getting Started$(RESET) $(BD_BLUE)##$(RESET)
 
@@ -353,7 +349,7 @@ $(BD_UL_IT_STD)remove any existing venvs from your project$(RESET).
 To start managing a project, simply run the following and begin tracking your
 dependencies in the generated $(BD_IT_BLUE)project.toml$(RESET).
 
-${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make init$(RESET)
+    $(BD_IT_WHITE)make init$(RESET)
 
 You $(BD_UL_IT_STD)must$(RESET) specify your project's dependencies according to $(BD_MAGENTA)PEP 621$(RESET). Additional
 development dependencies should be specified in a list called $(BD_MAGENTA)dev$(RESET) in the
@@ -365,9 +361,9 @@ You can set your environment variables in a few places, $(IT_UL_STD)in order of 
 precedence$(RESET):
 
 * In a file at the path specified by $(IT_ORANGE)PYLLOCK_ENV_FILE$(RESET).
-${SP}${SP}${SP}${SP}* If this variable isn't set, its value defaults to $(BD_UL_IT_BLUE).env$(RESET), representing a
-${SP}${SP}${SP}${SP}${SP}${SP}file next to the Pyllock Makefile.
-${SP}${SP}${SP}${SP}* Paths are relative to the Makefile.
+    * If this variable isn't set, its value defaults to $(BD_UL_IT_BLUE).env$(RESET), representing a
+      file next to the Pyllock Makefile.
+    * Paths are relative to the Makefile.
 * Inline with your calls (i.e., '$(BD_IT_WHITE)NO_COLOR=1 make help$(RESET)')
 * Persistently for your shell (i.e., in $(BD_IT_BLUE)~/.bashrc$(RESET) for Bash)
 
@@ -375,7 +371,7 @@ You can specify any environment variable Pyllock uses can be set in a file,
 either the default of $(BD_IT_BLUE).env$(RESET) or a file given at $(IT_ORANGE)PYLLOCK_ENV_FILE$(RESET). You cam view
 these values with:
 
-${SP}${SP}${SP}${SP}$(BD_IT_WHITE)make show-env$(RESET)
+    $(BD_IT_WHITE)make show-env$(RESET)
 
 $(BD_BLUE)##$(RESET) $(BD_STD)Extra Functions$(RESET) $(BD_BLUE)##$(RESET)
 
@@ -387,17 +383,19 @@ $(BD_BLUE)##$(RESET) $(BD_STD)Disabling Colors in Output$(RESET) $(BD_BLUE)##$(R
 
 Set the environment variable $(IT_ORANGE)NO_COLOR=1$(RESET) to disable colored output.
 endef
+export HELP
 
 define USAGE
 Pyllock
 
 "The stupid Python project manager."
 
-${SP}${SP}Usage: make <command>
+  Usage: make <command>
 
 Available commands:
 
 endef
+export USAGE
 
 ## Targets
 
@@ -421,7 +419,7 @@ clean-build:
 
 .PHONY: help # Print verbose help.
 help:
-	@echo "$(HELP)"
+	@echo "$$HELP"
 
 .PHONY: init # Create venv and a boilerplate pyproject.toml file.
 init: venv pyproject
@@ -498,9 +496,13 @@ upgrade-pyllock:
 	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/pyllock/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
 	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/pyllock/$(LATEST)/Makefile
 
+# Using "$$" syntax instead of "$()" syntax to reference an exported variable leaves rendering to
+# the shell, rather than doing a literal string replace. The "echo" command preserves leading
+# whitespace when *it* renders a variable in double-quotes, but does not when GNU Make renders the
+# variable because GNU Make presents it to echo as a string literal instead of a variable.
 .PHONY: usage
 usage:
-	@echo "$(USAGE)"
+	@echo "$$USAGE"
 	@grep -vE '^[[:space:]]' $(MAKEFILE_LIST) | grep -E '^.*:.* #' | sed -E 's/.PHONY:(.*):.*#(.*)/  \1###\2/' | sed -E 's/.PHONY: //g' | column -t -s '###'
 
 .PHONY: venv # Create or update a venv.
