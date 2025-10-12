@@ -100,7 +100,7 @@ Pyllock's recipes are intended to be run _serially_. Parallel execution is disab
 
 | Variable              | Value      | Affected Commands      | Usage |
 |-----------------------|------------|------------------------|-------|
-| `PYLLOCK_ENV`         | str        | `lock`, `sync`         | Determines whether this environment is `"dev"`, `"test"`, or `"prod"` ([DTAP paradigm](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production)). Defaults to `"dev"`. |
+| `PYLLOCK_ENV`         | str        | `lock`, `sync`         | Determines whether this environment is `"dev"`, `"test"`, or `"prod"` ([DTAP paradigm](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production), though "acceptance" doesn't make sense here). Defaults to `"dev"`. |
 | `PYLLOCK_ENV_FILE`    | path       | all                    | Specify a path to a `.env` file to use. By default, this is `.env`, relative to the Pyllock Makefile. |
 | `PYLLOCK_PYTHON`      | path       | all                    | Set to a path to a Python interpreter; by default this is `/usr/bin/env python3`. If `PYLLOCK_NO_VENV` is set, Pyllock will directly manage that interpreter. Otherwise, Pyllock will create a virtual environment at `PYLLOCK_VENV_PATH` using this interpreter. |
 | `PYLLOCK_VENV_NAME`   | rltv path  | `venv`, `lock`, `sync` | The name of the virtual environment's directory. Defaults to `venv`; some folks prefer `.venv`. **This value is a path relative to the Pyllock Makefile.** |
