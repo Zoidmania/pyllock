@@ -111,7 +111,7 @@ Pyllock's recipes are intended to be run _serially_. Parallel `make` execution i
 | `NO_COLOR`                 | `0`*or `1`                | all                    | Respects the [`NO_COLOR`](https://no-color.org/) community standard. Set to `1` to enable. If your shell doesn't support the necessary colors, this is set automatically. |
 
 If you define values in multiple places, sometimes it can be difficult to see what the state Pyllock
-is using actually is. Pyllock provides a command to view this state:
+is using _actually is_. Pyllock provides a command to view this state:
 
 ```bash
 make show
@@ -151,8 +151,11 @@ file for you to get started). Namely:
 
 - Specify your main dependencies in the `dependencies` list under the `[project]` section using
   [PEP 508][pep-508]-style strings.
-- Place the extra development dependencies (like linters, the test suite, etc) in a list called
+- Place the extra development dependencies (like linters, debuggers, etc) in a list called
   `dev` in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style
+  strings.
+- Place the extra development dependencies (like linters, the test suite, etc) in a list called
+  `test` in the `[project.optional-dependencies]` section, also using [PEP 508][pep-508]-style
   strings.
 - Unlike `requirements.txt`, you _don't_ need to specify _all_ dependencies, only the ones your
   project needs _directly_. Don't specify dependencies of your dependencies in `pyproject.toml`.
