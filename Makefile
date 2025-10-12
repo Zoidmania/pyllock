@@ -289,26 +289,28 @@ All commands are issued in the following format:
 
 The following commands are available.
 
+$(BD_GREEN)bootstrap$R
+    Within the virtual environment, or in $(IT_ORANGE)PYLLOCK_BASE_PYTHON$R's environment if
+    $(IT_ORANGE)PYLLOCK_NO_VENV$R is set, upgrades $(BD_IT_CYAN)pip$R and installs $(BD_IT_CYAN)wheel$R and $(BD_IT_CYAN)pip-tools$R,
+    necessary dependencies of $(BD_STD)Pyllock$R. This command $(BD_IT_STD)does not$R recreate the venv
+    if one already exists.
+
 $(BD_GREEN)build$R
     Builds a distribution of your Python project, according to $(BD_IT_BLUE)pyproject.toml$R.
 
-$(BD_GREEN)bootstrap$R
-    Upgrades $(BD_IT_CYAN)pip$R and installs $(BD_IT_CYAN)wheel$R and $(BD_IT_CYAN)pip-tools$R, necessary dependencies of
-    $(BD_STD)Pyllock$R. This command $(BD_IT_STD)does not$R recreate the venv if one already exists.
-
 $(BD_GREEN)clean$R
-    Deletes the project's virtual environment, any $(BD_IT_BLUE).egg-info$R metadata, and
-    build artifacts.
+	Convenience function for $(BD_GREEN)rm-venv$R and $(BD_GREEN)clean-build$R. $(BD_IT_BLUE)project.toml$R and any
+	lock files are left intact.
 
 $(BD_GREEN)clean-build$R
-    Deletes any $(BD_IT_BLUE).egg-info$R's, as well as the project's build artifacts by
+    Deletes any $(BD_IT_BLUE).egg-info$R. Also deletes the project's build artifacts by
     removing the 'dist/' directory.
 
 $(BD_GREEN)help$R
     Prints this help text and exits. Default command.
 
 $(BD_GREEN)init$R
-    A convenience function that runs $(BD_GREEN)venv$R and $(BD_GREEN)pyproject$R in that order.
+    Alias for $(BD_GREEN)new-project$R.
 
 $(BD_GREEN)install$R
     Alias for $(BD_GREEN)sync$R.
@@ -317,69 +319,71 @@ $(BD_GREEN)lock$R
     Creates lock files from the dependencies specified in $(BD_IT_BLUE)project.toml$R.
     Dependencies are $(BD_UL_IT_STD)not$R installed with this command.
 
+$(BD_GREEN)new-project$R
+    A convenience function that runs $(BD_GREEN)clean$R, $(BD_GREEN)venv$R, and $(BD_GREEN)pyproject$R in that order.
+
 $(BD_GREEN)pyproject$R
     Generates a $(BD_IT_BLUE)pyproject.toml$R file from the standard template at the root of
     the project.
 
 $(BD_GREEN)refresh$R
     A convenience function that runs $(BD_GREEN)clean$R, $(BD_GREEN)venv$R, and $(BD_GREEN)sync$R, in that order. Use
-    to completely rebuild a virtual environment.
+    to remove all build artifacts, completely rebuild a virtual environment (if
+    there is one), and reinstall dependencies from the lock files.
 
 $(BD_GREEN)show$R
     Print evaluated environment variables that $(BD_STD)Pyllock$R is aware of.
 
 $(BD_GREEN)sync$R
-    Syncs dependencies from the lock file to the virtual environment. Any new
-    dependencies will be installed, and any removed dependencies will be
+    Syncs dependencies from the lock file to the virtual environment if
+    $(IT_ORANGE)PYLLOCK_NO_VENV$R isn't set, or to $(IT_ORANGE)PYLLOCK_BASE_PYTHON$R's environment if it is.
+    Any new dependencies will be installed, and any removed dependencies will be
     uninstalled.
 
     By default, $(BD_UL_IT_STD)development$R dependencies are synced. Set $(IT_ORANGE)PYLLOCK_ENV$R to either
-    $(BD_STD)'main'$R or $(BD_STD)'dev'$R to select between the two available dependency lists.
+    $(BD_STD)'prod'$R, $(BD_STD)'dev'$R, or $(BD_STD)'test'$R to select between the available dependency lists.
 
 $(BD_GREEN)update$R
     A convenience function that runs $(BD_GREEN)venv$R, $(BD_GREEN)lock$R, and $(BD_GREEN)sync$R, in that order.
     Suitable for running after adding, removing, or updating dependencies.
 
 $(BD_GREEN)upgrade-pyllock$R
-    Updates $(BD_STD)Pyllock$R to the latest release version.
+    Updates the $(BD_STD)Pyllock$R $(BD_IT_BLUE)Makefile$R to the latest release version.
 
 $(BD_GREEN)usage$R
     Prints simple usage text. Default behavior.
 
 $(BD_GREEN)venv$R
-    If $(IT_ORANGE)PYLLOCK_NO_VENV$R isn't set, creates a virtual environment at the root of
-    the project, using the Python interpreter specified by $(IT_ORANGE)PYLLOCK_BASE_PYTHON$R,
-    or the default interpreter on the $(IT_ORANGE)PATH$R. If $(IT_ORANGE)PYLLOCK_NO_VENV$R is set, no virtual
-    environment is created.
+    If $(IT_ORANGE)PYLLOCK_NO_VENV$R is set, no virtual environment is created. Instead,
+    Pyllock will use $(IT_ORANGE)PYLLOCK_BASE_PYTHON$R's environment directly.
 
-    Either way, $(BD_GREEN)bootstrap$R is called at the end of this command to ensure required
-    tools are installed.
+    However, if $(IT_ORANGE)PYLLOCK_NO_VENV$R isn't set (default behavior), this command
+    creates a virtual environment at a path relative to $(BD_STD)Pyllock$R $(BD_IT_BLUE)Makefile$R given by
+    $(IT_ORANGE)PYLLOCK_VENV_NAME$R (simply $(BD_IT_BLUE)venv$R by default). The virtual environment is made
+    using the Python interpreter specified by $(IT_ORANGE)PYLLOCK_BASE_PYTHON$R, on the default
+    interpreter on the $(IT_ORANGE)PATH$R if one isn't specified. By default, the venv's prompt
+    prefix is the name of the parent directory of the project directory. For
+    example, if the $(BD_STD)Pyllock$R $(BD_IT_BLUE)Makefile$R is placed at $(BD_IT_BLUE)~/src/foobar/Makefile$R, the
+    virtual environment's prompt prefix will be $(BD_STD)'foobar'$R. The default prefix
+    logic can be overridden by setting $(IT_ORANGE)PYLLOCK_VENV_PREFIX$R to an explicit string
+    value.
 
-    By default, the venv's prefix is the name of the parent directory of the
-    project directory. This can be overridden by setting $(IT_ORANGE)PYLLOCK_VENV_PREFIX$R.
+    Regardless of whether a virtual environment is made, $(BD_GREEN)bootstrap$R is called at
+    the end of this command to ensure required tools are installed.
 
-$(BD_BLUE)##$R $(BD_STD)Getting Started$R $(BD_BLUE)##$R
+$(BD_BLUE)##$R $(BD_STD)Pyllock Settings$R $(BD_BLUE)##$R
 
-You $(BD_UL_IT_STD)must$R choose a Python interpreter to use for initializing the virtual
-environment (venv). Set the environment variable $(IT_ORANGE)PYLLOCK_BASE_PYTHON$R to the your
-interpreter of choice, otherwise the default Python interpreter on $(IT_ORANGE)PATH$R is used.
-The interpreter specified with this variable is $(BD_UL_STD)only used to create the venv$R.
+By default, $(BD_STD)Pyllock$R searches for the default Python interpreter on $(IT_ORANGE)$$PATH$R given
+by $(BD_STD)/usr/bin/env python3$R. This interpreter is used to create virtual environments
+by calling $(BD_IT_WHITE)python -m venv$R, or if $(IT_ORANGE)PYLLOCK_NO_VENV$R is set, $(BD_STD)Pyllock$R will attempt to
+install and manage dependencies in the interpreter's environment $(IT_STD)directly$R.
 
-To get started, place the $(BD_STD)Pyllock$R $(BD_IT_BLUE)Makefile$R in the root of your project. Then,
-$(BD_UL_IT_STD)remove any existing venvs from your project$R.
+Optionally, you may instead choose a Python interpreter by setting the
+environment variable $(IT_ORANGE)PYLLOCK_BASE_PYTHON$R to the your interpreter of choice.
 
-To start managing a project, simply run the following and begin tracking your
-dependencies in the generated $(BD_IT_BLUE)project.toml$R.
+$(BD_BLUE)###$R $(BD_STD)Configuring Environment Variables$R $(BD_BLUE)###$R
 
-    $(BD_IT_WHITE)make init$R
-
-You $(BD_UL_IT_STD)must$R specify your project's dependencies according to $(BD_MAGENTA)PEP 621$R. Additional
-development dependencies should be specified in a list called $(BD_MAGENTA)dev$R in the
-$(BD_MAGENTA)[project.optional-dependencies]$R section.
-
-$(BD_BLUE)##$R $(BD_STD)Configuring Environment Variables$R $(BD_BLUE)##$R
-
-You can set your environment variables in a few places, $(IT_UL_STD)in order of descreasing
+Environment variables can be set in a few places, $(IT_UL_STD)in order of descreasing
 precedence$R:
 
 * In a file at the path specified by $(IT_ORANGE)PYLLOCK_ENV_FILE$R.
@@ -389,21 +393,34 @@ precedence$R:
 * Inline with your calls (i.e., '$(BD_IT_WHITE)NO_COLOR=1 make help$R')
 * Persistently for your shell (i.e., in $(BD_IT_BLUE)~/.bashrc$R for Bash)
 
-You can specify any environment variable $(BD_STD)Pyllock$R uses can be set in a file,
-either the default of $(BD_IT_BLUE).env$R or a file given at $(IT_ORANGE)PYLLOCK_ENV_FILE$R. You cam view
-these values with:
+You can view setting values Pyllock has determined with:
 
     $(BD_IT_WHITE)make show$R
 
+$(BD_BLUE)##$R $(BD_STD)Getting Started$R $(BD_BLUE)##$R
+
+To start managing a new project, simply run the following and begin tracking
+your dependencies in the generated $(BD_IT_BLUE)project.toml$R.
+
+    $(BD_IT_WHITE)make new-project$R
+
+To start managing an existing project, place the $(BD_STD)Pyllock$R $(BD_IT_BLUE)Makefile$R at the root of
+the project.
+
+You $(BD_UL_IT_STD)must$R specify your project's dependencies according to $(BD_MAGENTA)PEP 621$R. Additional
+development dependencies should be specified in a list called $(BD_MAGENTA)dev$R in the
+$(BD_MAGENTA)[project.optional-dependencies]$R section.
+
 $(BD_BLUE)##$R $(BD_STD)Extra Functions$R $(BD_BLUE)##$R
 
-To add extra functions, create the file $(BD_IT_BLUE)pylk-extras.mk$R next to this Makefile. It
-will automatically be imported $(IT_STD)after$R the default targets, giving you the
-ability to override them.
+To add extra functions, create the file $(BD_IT_BLUE)pylk-extras.mk$R next to this $(BD_IT_BLUE)Makefile$R. It
+will automatically be imported $(IT_STD)after$R the default targets, giving you the ability
+to override them.
 
 $(BD_BLUE)##$R $(BD_STD)Disabling Colors in Output$R $(BD_BLUE)##$R
 
 Set the environment variable $(IT_ORANGE)NO_COLOR=1$R to disable colored output.
+
 endef
 
 
@@ -474,12 +491,6 @@ export TEST_DEPS_ARE_DEFINED
 ## Targets #########################################################################################
 
 
-.PHONY: build # Build the Python application.
-build:
-	@echo "$P $(BD_WHITE)Building package distribution...$R"
-	@$(INTERPRETER) -m build
-
-
 .PHONY: bootstrap # Update pip and install pip-tools.
 bootstrap:
 	@echo "$P $(BD_WHITE)Upgrading pip...$R"
@@ -487,6 +498,12 @@ bootstrap:
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$R"
 	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PYLLOCK_PIPTOOLS_VERSION)" wheel setuptools
+
+
+.PHONY: build # Build the Python application.
+build:
+	@echo "$P $(BD_WHITE)Building package distribution...$R"
+	@$(INTERPRETER) -m build
 
 
 .PHONY: clean # Remove venv, egg-info, and dist.
@@ -509,8 +526,8 @@ help:
 	@echo "$$HELP"
 
 
-.PHONY: init # Create venv and a boilerplate pyproject.toml file.
-init: venv pyproject
+.PHONY: init # Alias for new-project.
+init: new-project
 
 
 .PHONY: install # Alias for sync.
@@ -545,6 +562,10 @@ lock:
 	else \
 		echo "$P $(BD_YELLOW)No test dependencies defined in$R $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$R$(BD_YELLOW)! Skipping!$R"; \
 	fi
+
+
+.PHONY: new-project # Create venv and a boilerplate pyproject.toml file.
+new-project: clean venv pyproject
 
 
 .PHONY: pyproject # Create a boilerplate pyproject.toml file.
