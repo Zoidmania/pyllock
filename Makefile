@@ -40,7 +40,7 @@ endif
 # See: https://www.gnu.org/software/make/manual/html_node/One-Shell.html
 .ONESHELL:
 
-# Force serial execution. All of these recipes are intended to run serially; parellel execution
+# Force serial execution. All of these recipes are intended to run serially; parallel execution
 # could fail.
 # See: https://www.gnu.org/software/make/manual/html_node/Parallel-Disable.html
 .NOTPARALLEL:
@@ -475,7 +475,7 @@ sync:
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
 	fi
 
-.PHONY: update # Create or update a venv, compute lock files to latest versions, and sync depedendencies.
+.PHONY: update # Create or update a venv, compute lock files to latest versions, and sync dependencies.
 update: venv lock sync
 
 .PHONY: upgrade-pyllock # Pull the latest version of Pyllock.
