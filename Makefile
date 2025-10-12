@@ -448,9 +448,9 @@ rm-venv:
 .PHONY: show-env # Print evaluated environment variables that Pyllock is aware of.
 show-env:
 	@echo "PYLLOCK_ENV_FILE=$(PYLLOCK_ENV_FILE)"
+	@echo "PYLLOCK_ENV=$(PYLLOCK_ENV)"
 	@echo "PYLLOCK_PYTHON=$(PYLLOCK_PYTHON)"
 	@echo "PYLLOCK_VENV_PREFIX=$(PYLLOCK_VENV_PREFIX)"
-	@echo "PYLLOCK_ENV=$(PYLLOCK_ENV)"
 	@echo "PIPTOOLS_VERSION=$(PIPTOOLS_VERSION)"
 	@echo "NO_COLOR=$(NO_COLOR)"
 
