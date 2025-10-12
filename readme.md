@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/github/license/Zoidmania/pyllock)](https://github.com/Zoidmania/pyllock/blob/main/LICENSE)
 [![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/Zoidmania/Pyllock)](https://github.com/Zoidmania/pyllock/releases)
-[![Pronounciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)](#)
+[![Pronunciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)](#)
 [![Footgun?](https://img.shields.io/badge/jury's%20out-red?style=flat&label=footgun%3F)](https://news.ycombinator.com/item?id=17393292)
 
 Pyllock is a simple, probably stupid Python project manager. It's a Makefile being used as a command
@@ -47,7 +47,7 @@ Generally, my workflow to bootstrap a project is as follows.
 1. Fill out `pyproject.toml` with minimum metadata and dependencies required for the project.
 1. Run `make lock` to generate lock files.
     - The lock files will appear at `<project-root>/lock/[main|dev]`.
-1. Install the dependencies to the virtual environemtn with `make install` (an alias for
+1. Install the dependencies to the virtual environment with `make install` (an alias for
    `make sync`).
     - This target installs dependencies defined in the _lock files_, not directly from
       `pyproject.toml`.
@@ -92,9 +92,9 @@ in _your_ shell session. I have a shell alias that activates the venv in the cur
 alias act="source venv/bin/activate"
 ```
 
-### Parallel Excution
+### Parallel Execution
 
-Pyllock's recipes are inteded to be run _serially_. Parallel execution is disabled.
+Pyllock's recipes are intended to be run _serially_. Parallel execution is disabled.
 
 ### Optional Environment Variables
 
@@ -103,6 +103,7 @@ Pyllock's recipes are inteded to be run _serially_. Parallel execution is disabl
 | `PYLLOCK_PYTHON`      | `venv`            | Set to a path to an alternate Python interpreter. |
 | `PYLLOCK_VENV_PREFIX` | `venv`            | Set an alternate prompt prefix shown when activating the venv. Defaults to the name of the parent directory to your project. |
 | `PYLLOCK_ENV`         | `sync`/`install`  | Determines whether this environment is "prod" or "dev". Defaults to "dev". |
+| `PYLLOCK_NO_VENV`     | all               | Skip virtual environments altogether. Use in conjunction with `PYLLOCK_PYTHON` to specify an interpreter, or the default on on `$PATH` will be used. Useful for containerized deployments where using a venv may be redundant. |
 
 ### Production
 
