@@ -27,14 +27,18 @@
 # SOFTWARE.
 #################
 
-## Preflight Checks
+
+## Preflight Checks ################################################################################
+
 
 # If OS is Windows, exits with error.
 ifeq ($(OS),Windows_NT)
 	$(error Pyllock does not support Windows.)
 endif
 
-## Configs
+
+## Configs #########################################################################################
+
 
 # For performance reasons and to make intermediate env vars "persistent", we use one subshell.
 # See: https://www.gnu.org/software/make/manual/html_node/One-Shell.html
@@ -48,7 +52,7 @@ endif
 # Set a default target. In this case, print simple usage.
 .DEFAULT_GOAL := usage
 
-## Directory and Env Helpers
+## Environment #####################################################################################
 
 BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 
@@ -58,7 +62,7 @@ ifneq ("$(wildcard $(PYLLOCK_ENV_FILE))","")
     $(eval include $(PYLLOCK_ENV_FILE))
 endif
 
-PYLLOCK_PYTHON ?= /usr/bin/env python3
+PYLLOCK_BASE_PYTHON ?= /usr/bin/env python3
 PYLLOCK_NO_VENV ?= 0
 PYLLOCK_VENV_NAME ?= "venv"
 PYLLOCK_VENV_PREFIX ?= "$(shell basename $(BASEDIR))"
@@ -66,7 +70,7 @@ PYLLOCK_ENV ?= dev
 PYLLOCK_LOCK_DIR ?= $(BASEDIR)/lock
 # If NO_VENV is set, use the base interpreter. Otherwise, use the venv's interpreter.
 ifeq ($(PYLLOCK_NO_VENV),1)
-	INTERPRETER := $(PYLLOCK_PYTHON)
+	INTERPRETER := $(PYLLOCK_BASE_PYTHON)
 else
 	INTERPRETER := $(BASEDIR)/$(PYLLOCK_VENV_NAME)/bin/python
 endif
@@ -188,7 +192,9 @@ RESET := $(if $(NO_COLOR_ENABLED),,\033[0m)
 # When creating a macro , even if it'll be passed to 'echo' later, you _should_ add quotes.
 P := "'$(BD_GREEN)'['$(WHITE)'Pyllock'$(BD_GREEN)']'$(RESET)'"
 
-## Templates
+
+## Templates #######################################################################################
+
 
 define PYPROJECT_TOML
 # See: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
@@ -253,6 +259,7 @@ namespaces = true # true by default
 #dry-run = true
 #annotate = true
 endef
+
 
 # All of the spacing is designed to make the help text readable on a 80-column-width console.
 define HELP
@@ -337,8 +344,8 @@ $(BD_GREEN)usage$(RESET)
 
 $(BD_GREEN)venv$(RESET)
     If $(IT_ORANGE)PYLLOCK_NO_VENV$(RESET) isn't set, creates a virtual environment at the root of
-    the project, using the Python interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the
-    default interpreter on the $(IT_ORANGE)PATH$(RESET). If $(IT_ORANGE)PYLLOCK_NO_VENV$(RESET) is set, no virtual
+    the project, using the Python interpreter specified by $(IT_ORANGE)PYLLOCK_BASE_PYTHON$(RESET),
+    or the default interpreter on the $(IT_ORANGE)PATH$(RESET). If $(IT_ORANGE)PYLLOCK_NO_VENV$(RESET) is set, no virtual
     environment is created.
 
     Either way, $(BD_GREEN)bootstrap$(RESET) is called at the end of this command to ensure required
@@ -350,7 +357,7 @@ $(BD_GREEN)venv$(RESET)
 $(BD_BLUE)##$(RESET) $(BD_STD)Getting Started$(RESET) $(BD_BLUE)##$(RESET)
 
 You $(BD_UL_IT_STD)must$(RESET) choose a Python interpreter to use for initializing the virtual
-environment (venv). Set the environment variable $(IT_ORANGE)PYLLOCK_PYTHON$(RESET) to the your
+environment (venv). Set the environment variable $(IT_ORANGE)PYLLOCK_BASE_PYTHON$(RESET) to the your
 interpreter of choice, otherwise the default Python interpreter on $(IT_ORANGE)PATH$(RESET) is used.
 The interpreter specified with this variable is $(BD_UL_STD)only used to create the venv$(RESET).
 
@@ -395,6 +402,7 @@ $(BD_BLUE)##$(RESET) $(BD_STD)Disabling Colors in Output$(RESET) $(BD_BLUE)##$(R
 Set the environment variable $(IT_ORANGE)NO_COLOR=1$(RESET) to disable colored output.
 endef
 
+
 define USAGE
 Pyllock
 
@@ -406,6 +414,7 @@ Available commands:
 
 endef
 
+
 # Detects whether prod dependencies are defined
 define PROD_DEPS_ARE_DEFINED
 import tomllib
@@ -416,6 +425,7 @@ with open("pyproject.toml", "rb") as f:
 
 sys.exit(0 if "dependencies" in ppt["project"] else 1)
 endef
+
 
 # Detects whether dev dependencies are defined (optional)
 define DEV_DEPS_ARE_DEFINED
@@ -431,6 +441,7 @@ defined = "optional-dependencies" in ppt["project"] and \
 sys.exit(0 if defined else 1)
 endef
 
+
 # Detects whether dev dependencies are defined (optional)
 define TEST_DEPS_ARE_DEFINED
 import tomllib
@@ -445,6 +456,7 @@ defined = "optional-dependencies" in ppt["project"] and \
 sys.exit(0 if defined else 1)
 endef
 
+
 # Export to variable for shell execution. This way, leading whitespace is preserved.
 # See: https://stackoverflow.com/a/7287289
 export PYPROJECT_TOML
@@ -454,12 +466,14 @@ export PROD_DEPS_ARE_DEFINED
 export DEV_DEPS_ARE_DEFINED
 export TEST_DEPS_ARE_DEFINED
 
-## Targets
+
+## Targets #########################################################################################
 
 .PHONY: build # Build the Python application.
 build:
 	@echo "$P $(BD_WHITE)Building package distribution...$(RESET)"
 	@$(INTERPRETER) -m build
+
 
 .PHONY: bootstrap # Update pip and install pip-tools.
 bootstrap:
@@ -469,8 +483,10 @@ bootstrap:
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
 	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PYLLOCK_PIPTOOLS_VERSION)" wheel setuptools
 
+
 .PHONY: clean # Remove venv, egg-info, and dist.
 clean: rm-venv clean-build
+
 
 .PHONY: clean-build # Remove egg-info and dist.
 clean-build:
@@ -482,15 +498,19 @@ clean-build:
 		rm -rf $(BASEDIR)/dist; \
 	fi
 
+
 .PHONY: help # Print verbose help.
 help:
 	@echo "$$HELP"
 
+
 .PHONY: init # Create venv and a boilerplate pyproject.toml file.
 init: venv pyproject
 
+
 .PHONY: install # Alias for sync.
 install: sync
+
 
 .PHONY: lock # Create prod and dev lockfiles from pyproject.toml.
 lock:
@@ -521,6 +541,7 @@ lock:
 		echo "$P $(BD_YELLOW)No test dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_YELLOW)! Skipping!$(RESET)"; \
 	fi
 
+
 .PHONY: pyproject # Create a boilerplate pyproject.toml file.
 pyproject:
 	@if [ ! -f $(BASEDIR)/pyproject.toml ]; then \
@@ -531,25 +552,33 @@ pyproject:
 	fi
 	@echo "$P $(BD_YELLOW)Edit your$(RESET) $(BD_IT_BLUE)project.toml$(RESET) $(BD_YELLOW)metadata and dependencies before locking!$(RESET)"
 
+
 .PHONY: refresh # Remove build dist and egg-info, recreate venv, and sync lock into it.
 refresh: clean venv sync
 
+
 .PHONY: rm-venv # Remove venv.
 rm-venv:
-	@echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"
-	@rm -rf $(BASEDIR)/$(PYLLOCK_VENV_NAME)
+	@if [ "$(PYLLOCK_NO_VENV)" = 1 ]; then \
+		echo "$P $(BD_YELLOW)Virtual environment usage disabled because$(RESET) $(IT_ORANGE)PYLLOCK_NO_VENV$(RESET) $(BD_YELLOW)is set!$(RESET)"; \
+	else \
+		echo "$P $(BD_YELLOW)Removing virtual environment...$(RESET)"; \
+		rm -rf $(BASEDIR)/$(PYLLOCK_VENV_NAME); \
+	fi
+
 
 .PHONY: show # Print evaluated environment variables that Pyllock is aware of.
 show:
 	@echo "PYLLOCK_ENV=$(PYLLOCK_ENV)"
 	@echo "PYLLOCK_ENV_FILE=$(PYLLOCK_ENV_FILE)"
-	@echo "PYLLOCK_PYTHON=$(PYLLOCK_PYTHON)"
+	@echo "PYLLOCK_BASE_PYTHON=$(PYLLOCK_BASE_PYTHON)"
 	@echo "PYLLOCK_NO_VENV=$(PYLLOCK_NO_VENV)"
 	@echo "PYLLOCK_VENV_NAME=$(PYLLOCK_VENV_NAME)"
 	@echo "PYLLOCK_VENV_PREFIX=$(PYLLOCK_VENV_PREFIX)"
 	@echo "PYLLOCK_LOCK_DIR=$(PYLLOCK_LOCK_DIR)"
 	@echo "PYLLOCK_PIPTOOLS_VERSION=$(PYLLOCK_PIPTOOLS_VERSION)"
 	@echo "NO_COLOR=$(NO_COLOR)"
+
 
 .PHONY: sync # Sync venv with lockfile. Removes non-defined dependencies.
 sync:
@@ -581,14 +610,17 @@ sync:
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
 	fi
 
+
 .PHONY: update # Create or update a venv, compute lock files to latest versions, and sync dependencies.
 update: venv lock sync
+
 
 .PHONY: upgrade-pyllock # Pull the latest version of Pyllock.
 upgrade-pyllock:
 	@echo "$P $(BD_WHITE)Upgrading Pyllock to latest release...$(RESET)"
 	@$(eval LATEST=$(shell curl -s https://api.github.com/repos/Zoidmania/pyllock/releases/latest | grep -i "tag_name" | awk -F '"' '{print $$4}'))
 	@curl -s -o $(BASEDIR)/Makefile https://raw.githubusercontent.com/Zoidmania/pyllock/$(LATEST)/Makefile
+
 
 # Using "$$" syntax instead of "$()" syntax to reference an exported variable leaves rendering to
 # the shell, rather than doing a literal string replace. The "echo" command preserves leading
@@ -609,7 +641,7 @@ venv:
 		# We need to grab the Python interpreter on $$PATH to create the venv first, so don't use
 		# $$(INTERPRETER) here.
 		echo "$P $(BD_WHITE)Creating virtual environment...$(RESET)"; \
-		$(PYLLOCK_PYTHON) -m venv $(BASEDIR)/$(PYLLOCK_VENV_NAME) --prompt=$(PYLLOCK_VENV_PREFIX); \
+		$(PYLLOCK_BASE_PYTHON) -m venv $(BASEDIR)/$(PYLLOCK_VENV_NAME) --prompt=$(PYLLOCK_VENV_PREFIX); \
 	fi
 
 	$(MAKE) bootstrap --no-print-directory
