@@ -74,7 +74,7 @@ endif
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
 # this, it must be surrounded with quotes.
-PIPTOOLS_VERSION ?= >=7.5.1,<8
+PYLLOCK_PIPTOOLS_VERSION ?= >=7.5.1,<8
 
 # Respect https://no-color.org/.
 NO_COLOR ?= 0
@@ -467,7 +467,7 @@ bootstrap:
 	@$(INTERPRETER) -m pip install --upgrade pip
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$(RESET)"
-	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PIPTOOLS_VERSION)" wheel setuptools
+	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PYLLOCK_PIPTOOLS_VERSION)" wheel setuptools
 
 .PHONY: clean # Remove venv, egg-info, and dist.
 clean: rm-venv clean-build
@@ -541,13 +541,14 @@ rm-venv:
 
 .PHONY: show # Print evaluated environment variables that Pyllock is aware of.
 show:
-	@echo "PYLLOCK_ENV_FILE=$(PYLLOCK_ENV_FILE)"
 	@echo "PYLLOCK_ENV=$(PYLLOCK_ENV)"
+	@echo "PYLLOCK_ENV_FILE=$(PYLLOCK_ENV_FILE)"
 	@echo "PYLLOCK_PYTHON=$(PYLLOCK_PYTHON)"
-	@echo "PYLLOCK_VENV_PREFIX=$(PYLLOCK_VENV_PREFIX)"
 	@echo "PYLLOCK_NO_VENV=$(PYLLOCK_NO_VENV)"
+	@echo "PYLLOCK_VENV_NAME=$(PYLLOCK_VENV_NAME)"
+	@echo "PYLLOCK_VENV_PREFIX=$(PYLLOCK_VENV_PREFIX)"
 	@echo "PYLLOCK_LOCK_DIR=$(PYLLOCK_LOCK_DIR)"
-	@echo "PIPTOOLS_VERSION=$(PIPTOOLS_VERSION)"
+	@echo "PYLLOCK_PIPTOOLS_VERSION=$(PYLLOCK_PIPTOOLS_VERSION)"
 	@echo "NO_COLOR=$(NO_COLOR)"
 
 .PHONY: sync # Sync venv with lockfile. Removes non-defined dependencies.
