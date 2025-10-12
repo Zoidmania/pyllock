@@ -51,7 +51,6 @@ endif
 ## Directory and Env Helpers
 
 BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
-INTERPRETER := $(BASEDIR)/venv/bin/python
 REQS := $(BASEDIR)/lock
 
 # By default GNU make loads what is already in `env`. This extends that behavior to other files.
@@ -61,8 +60,10 @@ ifneq ("$(wildcard $(PYLLOCK_ENV_FILE))","")
 endif
 
 PYLLOCK_PYTHON ?= /usr/bin/env python3
+PYLLOCK_NO_VENV ?= 0
 PYLLOCK_VENV_PREFIX ?= "$(shell basename $(BASEDIR))"
 PYLLOCK_ENV ?= dev
+INTERPRETER := $(BASEDIR)/venv/bin/python
 
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
