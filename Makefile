@@ -52,7 +52,9 @@ endif
 # Set a default target. In this case, print simple usage.
 .DEFAULT_GOAL := usage
 
+
 ## Environment #####################################################################################
+
 
 BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 
@@ -468,6 +470,7 @@ export TEST_DEPS_ARE_DEFINED
 
 
 ## Targets #########################################################################################
+
 
 .PHONY: build # Build the Python application.
 build:
