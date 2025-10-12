@@ -190,17 +190,17 @@ define PYPROJECT_TOML
 [project]
 
 # Package names should follow PEP 423.
-name = \"\"
-version = \"\"
-description = \"\"
+name = ""
+version = ""
+description = ""
 authors = [
-    {name = \"\", email = \"\"},
+    {name = "", email = ""},
 ]
-readme = \"readme.md\"
-# For example, \">= 3.10\" or "== 3.11".
-requires-python = \"\"
+readme = "readme.md"
+# For example, ">= 3.10" or "== 3.11".
+requires-python = ""
 # See: https://pypi.org/classifiers/
-classifiers = [\"Private :: Do Not Upload\"]
+classifiers = ["Private :: Do Not Upload"]
 
 dependencies = [
 
@@ -218,13 +218,13 @@ test = [
 
 [project.urls]
 
-Repository = \"\"
+Repository = ""
 
 # https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/#fallback-behaviour
 [build-system]
 
-requires = [\"setuptools\", \"wheel\"]
-build-backend = \"setuptools.build_meta\"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 
@@ -254,7 +254,7 @@ export PYPROJECT_TOML
 define HELP
 $(BD_BLUE)#$(RESET) $(BD_STD)Pyllock ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
 
-\"The Stupid Python Project Manager.\"
+"The Stupid Python Project Manager."
 
 For more details, see $(UL_BLUE)https://github.com/Zoidmania/pyllock$(RESET).
 
