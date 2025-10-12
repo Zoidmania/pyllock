@@ -6,7 +6,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2023 Leland Vakarian
+# Copyright (c) 2025 Leland Vakarian
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -197,7 +197,7 @@ authors = [
     {name = "", email = ""},
 ]
 readme = "readme.md"
-# For example, ">= 3.10" or "== 3.11".
+# For example, ">= 3.11" or "== 3.11".
 requires-python = ""
 # See: https://pypi.org/classifiers/
 classifiers = ["Private :: Do Not Upload"]
@@ -246,9 +246,6 @@ namespaces = true # true by default
 #dry-run = true
 #annotate = true
 endef
-# Export to variable for shell execution. This way, leading whitespace is preserved.
-# See: https://stackoverflow.com/a/7287289
-export PYPROJECT_TOML
 
 # All of the spacing is designed to make the help text readable on a 80-column-width console.
 define HELP
@@ -258,9 +255,9 @@ $(BD_BLUE)#$(RESET) $(BD_STD)Pyllock ¯\_(ツ)_/¯$(RESET) $(BD_BLUE)#$(RESET)
 
 For more details, see $(UL_BLUE)https://github.com/Zoidmania/pyllock$(RESET).
 
-This manager creates virtual environments for your Python project and manages
-them with minimal tooling. It $(BD_UL_IT_STD)does not$(RESET) activate the environment for you! You
-must activate your virtual environment with:
+This Makefile manages your Python project's dependencies with minimal tooling.
+It creates virtual environments by default (but it doesn't have to). It $(BD_UL_IT_STD)does not$(RESET)
+activate virtual environments for you! You must activate your virtual environment with:
 
     $(BD_IT_WHITE)cd /path/to/project/$(BD_RESET)
     $(BD_IT_WHITE)source venv/bin/activate$(BD_RESET)
@@ -306,7 +303,7 @@ $(BD_GREEN)refresh$(RESET)
     to completely rebuild a virtual environment.
 
 $(BD_GREEN)show-env$(RESET)
-    Print evaluated environment variables that Pyllock is aware of.
+    Print evaluated environment variables that $(BD_STD)Pyllock$(RESET) is aware of.
 
 $(BD_GREEN)sync$(RESET)
     Syncs dependencies from the lock file to the virtual environment. Any new
@@ -321,7 +318,7 @@ $(BD_GREEN)update$(RESET)
     Suitable for running after adding, removing, or updating dependencies.
 
 $(BD_GREEN)upgrade-pyllock$(RESET)
-    Updates Pyllock to the latest release version.
+    Updates $(BD_STD)Pyllock$(RESET) to the latest release version.
 
 $(BD_GREEN)usage$(RESET)
     Prints simple usage text. Default behavior.
@@ -330,7 +327,7 @@ $(BD_GREEN)venv$(RESET)
     Creates a virtual environment at the root of the project, using the Python
     interpreter specified by $(IT_ORANGE)PYLLOCK_PYTHON$(RESET), or the default interpreter on the
     $(IT_ORANGE)PATH$(RESET). Also upgrades $(BD_IT_CYAN)pip$(RESET) and installs $(BD_IT_CYAN)wheel$(RESET) and $(BD_IT_CYAN)pip-tools$(RESET), necessary
-    dependencies of Pyllock. This command $(BD_IT_STD)does not$(RESET) recreate the venv if one
+    dependencies of $(BD_STD)Pyllock$(RESET). This command $(BD_IT_STD)does not$(RESET) recreate the venv if one
     already exists.
 
     By default, the venv's prefix is the name of the parent directory of the
@@ -343,7 +340,7 @@ environment (venv). Set the environment variable $(IT_ORANGE)PYLLOCK_PYTHON$(RES
 interpreter of choice, otherwise the default Python interpreter on $(IT_ORANGE)PATH$(RESET) is used.
 The interpreter specified with this variable is $(BD_UL_STD)only used to create the venv$(RESET).
 
-To get started, place the Pyllock $(BD_IT_BLUE)Makefile$(RESET) in the root of your project. Then,
+To get started, place the $(BD_STD)Pyllock$(RESET) $(BD_IT_BLUE)Makefile$(RESET) in the root of your project. Then,
 $(BD_UL_IT_STD)remove any existing venvs from your project$(RESET).
 
 To start managing a project, simply run the following and begin tracking your
@@ -362,12 +359,12 @@ precedence$(RESET):
 
 * In a file at the path specified by $(IT_ORANGE)PYLLOCK_ENV_FILE$(RESET).
     * If this variable isn't set, its value defaults to $(BD_UL_IT_BLUE).env$(RESET), representing a
-      file next to the Pyllock Makefile.
+      file next to the $(BD_STD)Pyllock$(RESET) Makefile.
     * Paths are relative to the Makefile.
 * Inline with your calls (i.e., '$(BD_IT_WHITE)NO_COLOR=1 make help$(RESET)')
 * Persistently for your shell (i.e., in $(BD_IT_BLUE)~/.bashrc$(RESET) for Bash)
 
-You can specify any environment variable Pyllock uses can be set in a file,
+You can specify any environment variable $(BD_STD)Pyllock$(RESET) uses can be set in a file,
 either the default of $(BD_IT_BLUE).env$(RESET) or a file given at $(IT_ORANGE)PYLLOCK_ENV_FILE$(RESET). You cam view
 these values with:
 
@@ -383,7 +380,6 @@ $(BD_BLUE)##$(RESET) $(BD_STD)Disabling Colors in Output$(RESET) $(BD_BLUE)##$(R
 
 Set the environment variable $(IT_ORANGE)NO_COLOR=1$(RESET) to disable colored output.
 endef
-export HELP
 
 define USAGE
 Pyllock
@@ -395,7 +391,54 @@ Pyllock
 Available commands:
 
 endef
+
+# Detects whether prod dependencies are defined
+define PROD_DEPS_ARE_DEFINED
+import tomllib
+import sys
+
+with open("pyproject.toml", "rb") as f:
+    ppt = tomllib.load(f)
+
+sys.exit(0 if "dependencies" in ppt["project"] else 1)
+endef
+
+# Detects whether dev dependencies are defined (optional)
+define DEV_DEPS_ARE_DEFINED
+import tomllib
+import sys
+
+with open("pyproject.toml", "rb") as f:
+    ppt = tomllib.load(f)
+
+defined = "optional-dependencies" in ppt["project"] and \
+	"dev" in ppt["project"]["optional-dependencies"].keys()
+
+sys.exit(0 if defined else 1)
+endef
+
+# Detects whether dev dependencies are defined (optional)
+define TEST_DEPS_ARE_DEFINED
+import tomllib
+import sys
+
+with open("pyproject.toml", "rb") as f:
+    ppt = tomllib.load(f)
+
+defined = "optional-dependencies" in ppt["project"] and \
+	"test" in ppt["project"]["optional-dependencies"].keys()
+
+sys.exit(0 if defined else 1)
+endef
+
+# Export to variable for shell execution. This way, leading whitespace is preserved.
+# See: https://stackoverflow.com/a/7287289
+export PYPROJECT_TOML
+export HELP
 export USAGE
+export PROD_DEPS_ARE_DEFINED
+export DEV_DEPS_ARE_DEFINED
+export TEST_DEPS_ARE_DEFINED
 
 ## Targets
 
@@ -431,17 +474,30 @@ install: sync
 lock:
 	@$(shell mkdir -p $(REQS))
 
-	@echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"
-	@$(VENV) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
-		-o $(REQS)/main $(BASEDIR)/pyproject.toml
+	@if $(VENV) -c "$$PROD_DEPS_ARE_DEFINED"; then \
+		echo "$P $(BD_WHITE)Locking main dependencies...$(RESET)"; \
+		$(VENV) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
+			-o $(REQS)/main $(BASEDIR)/pyproject.toml; \
+	else \
+		echo "$P $(BD_RED)No base dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
+		exit
+	fi
 
-	@echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"
-	@$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
-		-o $(REQS)/dev $(BASEDIR)/pyproject.toml
+	@if $(VENV) -c "$$DEV_DEPS_ARE_DEFINED"; then \
+		echo "$P $(BD_WHITE)Locking dev dependencies...$(RESET)"; \
+		$(VENV) -m piptools compile -q --extra dev --upgrade --resolver backtracking --no-strip-extras \
+			-o $(REQS)/dev $(BASEDIR)/pyproject.toml; \
+	else \
+		echo "$P $(BD_YELLOW)No dev dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_YELLOW)! Skipping!$(RESET)"; \
+	fi
 
-	@echo "$P $(BD_WHITE)Locking test dependencies...$(RESET)"
-	@$(VENV) -m piptools compile -q --extra test --upgrade --resolver backtracking --no-strip-extras \
-		-o $(REQS)/test $(BASEDIR)/pyproject.toml
+	@if $(VENV) -c "$$TEST_DEPS_ARE_DEFINED"; then \
+		echo "$P $(BD_WHITE)Locking test dependencies...$(RESET)"; \
+		$(VENV) -m piptools compile -q --extra test --upgrade --resolver backtracking --no-strip-extras \
+			-o $(REQS)/test $(BASEDIR)/pyproject.toml; \
+	else \
+		echo "$P $(BD_YELLOW)No test dependencies defined in$(RESET) $(BD_IT_BLUE)$(BASEDIR)/pyproject.toml$(RESET)$(BD_YELLOW)! Skipping!$(RESET)"; \
+	fi
 
 .PHONY: pyproject # Create a boilerplate pyproject.toml file.
 pyproject:
@@ -472,17 +528,30 @@ show-env:
 
 .PHONY: sync # Sync venv with lockfile. Removes non-defined dependencies.
 sync:
-	@echo "$P $(BD_WHITE)Syncing dependencies to venv...$(RESET)"
-
 	@if [ "$(PYLLOCK_ENV)" = "production" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
-		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/main; \
-		$(VENV) -m pip check; \
+		echo "$P $(BD_WHITE)Syncing prod dependencies to venv...$(RESET)"; \
+        if [ -f $(REQS)/main ]; then \
+			$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/main; \
+			$(VENV) -m pip check; \
+        else \
+            echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/main$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
+		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "development" ] || [ "$(PYLLOCK_ENV)" = "dev" ]; then \
-		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
-		$(VENV) -m pip check; \
+		echo "$P $(BD_WHITE)Syncing dev dependencies to venv...$(RESET)"; \
+        if [ -f $(REQS)/dev ]; then \
+			$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/dev; \
+			$(VENV) -m pip check; \
+        else \
+            echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/dev$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
+		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "testing" ] || [ "$(PYLLOCK_ENV)" = "test" ]; then \
-		$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/test; \
-		$(VENV) -m pip check; \
+		echo "$P $(BD_WHITE)Syncing test dependencies to venv...$(RESET)"; \
+        if [ -f $(REQS)/dev ]; then \
+			$(VENV) -m piptools sync --pip-args "-e ." $(REQS)/test; \
+			$(VENV) -m pip check; \
+		else \
+            echo "$P $(BD_RED)No lockfile found at$(RESET) $(BD_IT_BLUE)$(BASEDIR)/test$(RESET)$(BD_RED)! Aborting!$(RESET)"; \
+        fi; \
 	else \
 		echo "$P $(BD_RED)Bad value for$(RESET) $(IT_ORANGE)PYLLOCK_ENV$(RESET): $(PYLLOCK_ENV)"; \
 	fi

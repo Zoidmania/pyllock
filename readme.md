@@ -46,7 +46,7 @@ Generally, my workflow to bootstrap a project is as follows.
     - See [Optional Environment Variables](#optional-environment-variables) for options.
 1. Fill out `pyproject.toml` with minimum metadata and dependencies required for the project.
 1. Run `make lock` to generate lock files.
-    - The lock files will appear at `<project-root>/lock/[main|dev]`.
+    - The lock files will appear at `<project-root>/lock/[prod|dev|test]`.
 1. Install the dependencies to the virtual environment with `make install` (an alias for
    `make sync`).
     - This target installs dependencies defined in the _lock files_, not directly from
@@ -125,11 +125,13 @@ tested with other shells. It also expects the following programs are available:
 - GNU `make`
     - Tested with GNU Make 4.3.
     - Doesn't work with "standard" `make`. Pyllock relies on features of GNU Make.
-- `python3`
+- `python3.11+`
     - You need to have Python available to create the virtual environment. Any version of Python
-      that includes the `venv` module (**introduced in Python 3.3**) will work. The initial Python
-      instance used to create your project's virtual environment **will not be modified**; only the
-      project's virtual environment will be modified.
+      that includes both the `venv` and `tomllib` modules (**introduced in Python 3.3 and 3.11,
+      respectively**) will work.
+          - If you're using a virtual environment, the initial Python instance used to create your
+            virtual environment **will not be modified**; only _your_ virtual environment will be
+            modified.
     - To specify a Python interpreter that isn't the default one on your `$PATH`, set the
       environment variable `PYLLOCK_PYTHON` to the interpreter of your choice. This variable is only
       used to create the venv.
