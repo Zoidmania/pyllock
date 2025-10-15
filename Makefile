@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.9.0
+# v0.9.1
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -652,20 +652,19 @@ upgrade-pyllock:
 # the shell, rather than doing a literal string replace. The "echo" command preserves leading
 # whitespace when *it* renders a variable in double-quotes, but does not when GNU Make renders the
 # variable because GNU Make presents it to echo as a string literal instead of a variable.
-.PHONY: usage
+.PHONY: usage # Print basic usage.
 usage:
 	@echo "$$USAGE"
 	@grep -vE '^[[:space:]]' $(MAKEFILE_LIST) | grep -E '^.*:.* #' | sed -E 's/.PHONY:(.*):.*#(.*)/  \1###\2/' | sed -E 's/.PHONY: //g' | column -t -s '###'
 
-
+# We need to grab the Python interpreter on $$PATH to create the venv first, so don't use
+# $$(INTERPRETER) here.
 .PHONY: venv # Create or update a venv.
 venv:
 	@if [ "$(PYLLOCK_NO_VENV)" = 1 ]; then \
 		echo "$P $(BD_YELLOW)Virtual environment usage disabled because$R $(IT_ORANGE)PYLLOCK_NO_VENV$R $(BD_YELLOW)is set!$R"; \
 		echo "$P $(BD_YELLOW)Using environment of interpreter $R $(BD_IT_BLUE)$(INTERPRETER)$R $(BD_YELLOW)directly!$R"; \
 	elif [ ! -d $(BASEDIR)/$(PYLLOCK_VENV_NAME) ]; then \
-		# We need to grab the Python interpreter on $$PATH to create the venv first, so don't use
-		# $$(INTERPRETER) here.
 		echo "$P $(BD_WHITE)Creating virtual environment...$R"; \
 		$(PYLLOCK_BASE_PYTHON) -m venv $(BASEDIR)/$(PYLLOCK_VENV_NAME) --prompt=$(PYLLOCK_VENV_PREFIX); \
 	fi
