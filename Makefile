@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.9.1
+# v0.9.2
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -61,7 +61,7 @@ BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 # By default GNU make loads what is already in `env`. This extends that behavior to other files.
 PYLLOCK_ENV_FILE ?= .env
 ifneq ("$(wildcard $(PYLLOCK_ENV_FILE))","")
-    $(eval include $(PYLLOCK_ENV_FILE))
+	$(eval include $(PYLLOCK_ENV_FILE))
 endif
 
 PYLLOCK_BASE_PYTHON ?= /usr/bin/env python3
@@ -299,8 +299,8 @@ $(BD_GREEN)build$R
     Builds a distribution of your Python project, according to $(BD_IT_BLUE)pyproject.toml$R.
 
 $(BD_GREEN)clean$R
-	Convenience function for $(BD_GREEN)rm-venv$R and $(BD_GREEN)clean-build$R. $(BD_IT_BLUE)project.toml$R and any
-	lock files are left intact.
+    Convenience function for $(BD_GREEN)rm-venv$R and $(BD_GREEN)clean-build$R. $(BD_IT_BLUE)project.toml$R and any
+    lock files are left intact.
 
 $(BD_GREEN)clean-build$R
     Deletes any $(BD_IT_BLUE).egg-info$R. Also deletes the project's build artifacts by
@@ -457,7 +457,7 @@ with open("pyproject.toml", "rb") as f:
     ppt = tomllib.load(f)
 
 defined = "optional-dependencies" in ppt["project"] and \
-	"dev" in ppt["project"]["optional-dependencies"].keys()
+    "dev" in ppt["project"]["optional-dependencies"].keys()
 
 sys.exit(0 if defined else 1)
 endef
@@ -469,7 +469,7 @@ import tomllib
 import sys
 
 with open("pyproject.toml", "rb") as f:
-    ppt = tomllib.load(f)
+	ppt = tomllib.load(f)
 
 defined = "optional-dependencies" in ppt["project"] and \
 	"test" in ppt["project"]["optional-dependencies"].keys()
@@ -608,30 +608,34 @@ show:
 
 .PHONY: sync # Sync venv with lockfile. Removes non-defined dependencies.
 sync:
+	@if [ "$(PYLLOCK_NO_VENV)" = 1 ]; then \
+		echo "$P $(BD_YELLOW)Virtual environment usage disabled because$R $(IT_ORANGE)PYLLOCK_NO_VENV$R $(BD_YELLOW)is set!$R"; \
+		echo "$P $(BD_YELLOW)Using environment of interpreter $R $(BD_IT_BLUE)$(INTERPRETER)$R $(BD_YELLOW)directly!$R"; \
+	fi
 	@if [ "$(PYLLOCK_ENV)" = "production" ] || [ "$(PYLLOCK_ENV)" = "prod" ]; then \
-		echo "$P $(BD_WHITE)Syncing prod dependencies to venv...$R"; \
-        if [ -f $(PYLLOCK_LOCK_DIR)/main ]; then \
+		echo "$P $(BD_WHITE)Syncing prod dependencies...$R"; \
+		if [ -f $(PYLLOCK_LOCK_DIR)/main ]; then \
 			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/main; \
 			$(INTERPRETER) -m pip check; \
-        else \
-            echo "$P $(BD_RED)No lockfile found at$R $(BD_IT_BLUE)$(BASEDIR)/main$R$(BD_RED)! Aborting!$R"; \
+		else \
+			echo "$P $(BD_RED)No lockfile found at$R $(BD_IT_BLUE)$(BASEDIR)/main$R$(BD_RED)! Aborting!$R"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "development" ] || [ "$(PYLLOCK_ENV)" = "dev" ]; then \
-		echo "$P $(BD_WHITE)Syncing dev dependencies to venv...$R"; \
-        if [ -f $(PYLLOCK_LOCK_DIR)/dev ]; then \
+		echo "$P $(BD_WHITE)Syncing dev dependencies...$R"; \
+		if [ -f $(PYLLOCK_LOCK_DIR)/dev ]; then \
 			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/dev; \
 			$(INTERPRETER) -m pip check; \
-        else \
-            echo "$P $(BD_RED)No lockfile found at$R $(BD_IT_BLUE)$(BASEDIR)/dev$R$(BD_RED)! Aborting!$R"; \
+		else \
+			echo "$P $(BD_RED)No lockfile found at$R $(BD_IT_BLUE)$(BASEDIR)/dev$R$(BD_RED)! Aborting!$R"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "testing" ] || [ "$(PYLLOCK_ENV)" = "test" ]; then \
-		echo "$P $(BD_WHITE)Syncing test dependencies to venv...$R"; \
-        if [ -f $(PYLLOCK_LOCK_DIR)/dev ]; then \
+		echo "$P $(BD_WHITE)Syncing test dependencies...$R"; \
+		if [ -f $(PYLLOCK_LOCK_DIR)/dev ]; then \
 			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/test; \
 			$(INTERPRETER) -m pip check; \
 		else \
-            echo "$P $(BD_RED)No lockfile found at$R $(BD_IT_BLUE)$(BASEDIR)/test$R$(BD_RED)! Aborting!$R"; \
-        fi; \
+			echo "$P $(BD_RED)No lockfile found at$R $(BD_IT_BLUE)$(BASEDIR)/test$R$(BD_RED)! Aborting!$R"; \
+		fi; \
 	else \
 		echo "$P $(BD_RED)Bad value for$R $(IT_ORANGE)PYLLOCK_ENV$R: $(PYLLOCK_ENV)"; \
 	fi
