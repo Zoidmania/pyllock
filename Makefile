@@ -33,7 +33,7 @@
 
 # If OS is Windows, exits with error.
 ifeq ($(OS),Windows_NT)
-	$(error Pyllock does not support Windows.)
+    $(error Pyllock does not support Windows.)
 endif
 
 
@@ -72,9 +72,9 @@ PYLLOCK_ENV ?= dev
 PYLLOCK_LOCK_DIR ?= $(BASEDIR)/lock
 # If NO_VENV is set, use the base interpreter. Otherwise, use the venv's interpreter.
 ifeq ($(PYLLOCK_NO_VENV),1)
-	INTERPRETER := $(PYLLOCK_BASE_PYTHON)
+    INTERPRETER := $(PYLLOCK_BASE_PYTHON)
 else
-	INTERPRETER := $(BASEDIR)/$(PYLLOCK_VENV_NAME)/bin/python
+    INTERPRETER := $(BASEDIR)/$(PYLLOCK_VENV_NAME)/bin/python
 endif
 
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
@@ -85,9 +85,9 @@ PYLLOCK_PIPTOOLS_VERSION ?= >=7.5.1,<8
 # Respect https://no-color.org/.
 NO_COLOR ?= 0
 ifneq ($(shell tput colors),256)
-	INSUFFICIENT_COLORS := true
+    INSUFFICIENT_COLORS := true
 else
-	INSUFFICIENT_COLORS := false
+    INSUFFICIENT_COLORS := false
 endif
 # If NO_COLOR asserted or insufficient colors supported, disable colors.
 NO_COLOR_ENABLED := $(or $(findstring 1,$(NO_COLOR)),$(findstring true,$(INSUFFICIENT_COLORS)))
