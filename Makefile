@@ -61,7 +61,7 @@ BASEDIR := $(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 # By default GNU make loads what is already in `env`. This extends that behavior to other files.
 PYLLOCK_ENV_FILE ?= .env
 ifneq ("$(wildcard $(PYLLOCK_ENV_FILE))","")
-	$(eval include $(PYLLOCK_ENV_FILE))
+    $(eval include $(PYLLOCK_ENV_FILE))
 endif
 
 PYLLOCK_BASE_PYTHON ?= /usr/bin/env python3
