@@ -5,8 +5,8 @@
 [![Pronunciation](https://img.shields.io/badge/pronounciation-like_%22pilluck%22-blue)](#)
 [![Footgun?](https://img.shields.io/badge/jury's%20out-red?style=flat&label=footgun%3F)](https://news.ycombinator.com/item?id=17393292)
 
-Pyllock is a simple, probably stupid Python project manager. It's a Makefile being used as a command
-runner.
+Pyllock is a simple, probably stupid Python project manager. It's a Makefile command runner
+wrapping `pip-tools`.
 
 On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
 [`pip-tools`][pip-tools] to manage my Python projects these days. Pyllock will:
