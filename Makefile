@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.9.2
+# v0.9.3
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -80,7 +80,8 @@ endif
 # Pin the pip-tools version range so this Makefile can predict its behavior. Pip follows version
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
 # this, it must be surrounded with quotes.
-PYLLOCK_PIPTOOLS_VERSION ?= >=7.5.1,<8
+# Nota bene: pip-tools 7.5.2 is the minimum version that supports pip 25.3.
+PYLLOCK_PIPTOOLS_VERSION ?= >=7.5.2,<8
 
 # Respect https://no-color.org/.
 NO_COLOR ?= 0
