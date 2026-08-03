@@ -1,6 +1,6 @@
 #################
 # Pyllock Makefile
-# v0.9.3
+# v0.9.4
 #
 # For more details, see https://github.com/Zoidmania/pyllock.
 #
@@ -81,7 +81,7 @@ endif
 # specifiers outlined in PEP440, even inline on the CLI. Note that, if a range is specified like
 # this, it must be surrounded with quotes.
 # Nota bene: pip-tools 7.5.2 is the minimum version that supports pip 25.3.
-PYLLOCK_PIPTOOLS_VERSION ?= >=7.5.2,<8
+PYLLOCK_PIPTOOLS_VERSION ?= >=7.6.0,<8
 
 # Respect https://no-color.org/.
 NO_COLOR ?= 0
@@ -495,7 +495,7 @@ export TEST_DEPS_ARE_DEFINED
 .PHONY: bootstrap # Update pip and install pip-tools.
 bootstrap:
 	@echo "$P $(BD_WHITE)Upgrading pip...$R"
-	@$(INTERPRETER) -m pip install --upgrade pip
+	@$(INTERPRETER) -m pip install pip==26.1
 
 	@echo "$P $(BD_WHITE)Installing/upgrading pip-tools and wheel...$R"
 	@$(INTERPRETER) -m pip install --upgrade "pip-tools$(PYLLOCK_PIPTOOLS_VERSION)" wheel setuptools
