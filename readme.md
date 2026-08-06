@@ -6,13 +6,22 @@
 [![Footgun?](https://img.shields.io/badge/jury's%20out-red?style=flat&label=footgun%3F)](https://news.ycombinator.com/item?id=17393292)
 
 Pyllock is a simple, probably stupid Python project manager. It's a Makefile command runner
-wrapping `pip-tools`.
+that wraps `pip-tools`.
 
-On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
-[`pip-tools`][pip-tools] to manage my Python projects these days. Pyllock will:
+> [!NOTE]
+> **This is in no way a sales pitch**; I'm only sharing my silly workflow. I'm resistant to [`poetry`][poetry]
+> (some of its behavior rubs me the wrong way), and more recently [`uv`][uv], but I like
+> `pyproject.toml`. Just because _I_ don't like Poetry doesn't mean you shouldn't use it. In fact, you
+> probably should, it's a good tool.
 
-- Bootstrap a virtual environment using the `venv` module with the latest versions of `pip`,
-  `wheel`, and `pip-tools`.
+[poetry]: https://python-poetry.org/
+[uv]: https://docs.astral.sh/uv/
+
+On *nix systems, I like to use `make`, `pyproject.toml`, and [`pip-tools`][pip-tools] to manage
+my Python projects. Pyllock is the marriage of those three things. Pyllock will:
+
+- Bootstrap a virtual environment using the `venv` module with the latest compatible versions
+  of `pip`, `wheel`, and `pip-tools`.
 - Create lock files using `pip-tools` based on the contents of your project's `pyproject.toml`.
 - Install and update dependencies based on the lock files.
 
@@ -20,21 +29,37 @@ On Linux or Unix/Mac systems, I like to use Makefiles, `pyproject.toml`, and
 
 ## Installation
 
-Simple:
+> [!TIP]
+> Place the Pyllock `Makefile` at the root of your Python project.
+
+The following downloads the _latest release_ of Pyllock:
+
+```bash
+curl -s -o Makefile https://raw.githubusercontent.com/Zoidmania/pyllock/$(curl -s https://api.github.com/repos/Zoidmania/pyllock/releases/latest | grep -i "tag_name" | awk -F '"' '{print $4}')/Makefile
+```
+
+If you instead want to download whatever's in `main`:
 
 ```bash
 # Download the Makefile
 curl https://raw.githubusercontent.com/Zoidmania/pyllock/main/Makefile -o Makefile
 ```
 
-Place the `Makefile` at the root of your project.
+## Using Pyllock
 
-## Usage
+### Usage
 
-To get started, run the default target:
+Basic usage can be printed running the default target, or explicitly:
 
 ```bash
-make # prints help text
+make
+make usage
+```
+
+Alternatively, for verbose help:
+
+```bash
+make help
 ```
 
 ### Starting a Brand New Project
@@ -85,12 +110,14 @@ make refresh
 
 ### Activating Your Virtual Environment
 
-**_Nota Bene_**: `make` subshells the calls. You can't activate the virtual environment with `make`
-in _your_ shell session. I have a shell alias that activates the venv in the current dir:
-
-```bash
-alias act="source venv/bin/activate"
-```
+> [!NOTE]
+> One of the downsides of using `make` as a command runner is that it subshells the calls, so you can't
+> activate the virtual environment with `make` in _your_ shell session. I have a shell alias that
+> activates the venv in the current dir:
+> 
+> ```bash
+> alias act="source venv/bin/activate"
+> ```
 
 ### Parallel Execution
 
@@ -200,22 +227,14 @@ temporary, isolated virtual environment without messing with your development en
 labeling and ordering the dependencies in a sensible manner. Pyllock uses this feature of `pip-tools`
 to generate its lock files.
 
-## Disclaimer
+## Acknowledgements
 
-**This is in no way a sales pitch**; I'm only sharing my insanity. I'm resistant to [Poetry][poetry]
-(some of its behavior rubs me the wrong way), but I like `pyproject.toml`. Just because _I_ don't
-like Poetry doesn't mean you shouldn't use it. In fact, you probably should, it's a good tool.
-
-[poetry]: https://python-poetry.org/
-
-Also, huge thanks to [Hynek Schlawack][blog] for giving me the idea to use `pyproject.toml` +
+Huge thanks to [Hynek Schlawack][hynek-blog] for giving me the idea to use `pyproject.toml` +
 `Makefile` to begin with.
 
-[blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
+[hynek-blog]: https://hynek.me/til/pip-tools-and-pyproject-toml/
 
-## Acknowledgement
-
-I leveraged some ideas and code from mitjafelicijan's [makext][makext], an effort to add extensions
-for Makefiles being used as a command runner.
+Also, I leveraged some ideas and code from mitjafelicijan's [makext][makext], an effort to add
+extensions for Makefiles being used as a command runner.
 
 [makext]: https://github.com/mitjafelicijan/makext/tree/master
