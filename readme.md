@@ -26,7 +26,7 @@ my Python projects. Pyllock is the marriage of those three things. Pyllock will:
 - Install and update dependencies based on the lock files.
 
 [pip-tools]: https://github.com/jazzband/pip-tools/
-
+ 
 ## Installation
 
 > [!TIP]
@@ -238,3 +238,10 @@ Also, I leveraged some ideas and code from mitjafelicijan's [makext][makext], an
 extensions for Makefiles being used as a command runner.
 
 [makext]: https://github.com/mitjafelicijan/makext/tree/master
+
+---
+
+# Project Activity
+
+![Alt](https://repobeats.axiom.co/api/embed/f4e5450246720c19dca8c15771764a95acc653dc.svg "Repobeats analytics image")
+
