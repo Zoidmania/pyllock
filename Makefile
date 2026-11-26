@@ -112,9 +112,10 @@ WHITE   := $(if $(NO_COLOR_ENABLED),,$(shell tput setaf 7 2>/dev/null))
 ORANGE  := $(if $(NO_COLOR_ENABLED),,$(shell tput setaf 214 2>/dev/null))
 
 # Formatting Macros
-BD := $(if $(NO_COLOR_ENABLED),,$(shell tput bold 2>/dev/null))
-UL := $(if $(NO_COLOR_ENABLED),,$(shell tput smul 2>/dev/null))
-IT := $(if $(NO_COLOR_ENABLED),,$(shell tput sitm 2>/dev/null))
+BD    := $(if $(NO_COLOR_ENABLED),,$(shell tput bold 2>/dev/null))
+UL    := $(if $(NO_COLOR_ENABLED),,$(shell tput smul 2>/dev/null))
+IT    := $(if $(NO_COLOR_ENABLED),,$(shell tput sitm 2>/dev/null))
+BLINK := $(if $(NO_COLOR_ENABLED),,$(shell tput blink 2>/dev/null))
 
 # Reset Macro
 # Resets terminal typeface back to default, removing all in-situ formatting.
@@ -471,7 +472,7 @@ lock:
 		$(INTERPRETER) -m piptools compile -q --upgrade --resolver backtracking --no-strip-extras \
 			-o $(PYLLOCK_LOCK_DIR)/main $(BASEDIR)/pyproject.toml; \
 	else \
-		echo "$P $(BD)$(RED)No base dependencies defined in$R $(BD)$(IT)$(BLUE)$(BASEDIR)/pyproject.toml$R$(BD)$(RED)! Aborting!$R"; \
+		echo "$P $(BD)$(BLINK)$(RED)No base dependencies defined in$R $(BD)$(BLINK)$(IT)$(BLUE)$(BASEDIR)/pyproject.toml$R$(BD)$(BLINK)$(RED)! Aborting!$R"; \
 		exit; \
 	fi
 
@@ -546,7 +547,7 @@ sync:
 			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/main; \
 			$(INTERPRETER) -m pip check; \
 		else \
-			echo "$P $(BD)$(RED)No lockfile found at$R $(BD)$(IT)$(BLUE)$(BASEDIR)/main$R$(BD)$(RED)! Aborting!$R"; \
+			echo "$P $(BD)$(BLINK)$(RED)No lockfile found at$R $(BD)$(BLINK)$(IT)$(BLUE)$(BASEDIR)/main$R$(BD)$(BLINK)$(RED)! Aborting!$R"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "development" ] || [ "$(PYLLOCK_ENV)" = "dev" ]; then \
 		echo "$P $(BD)$(WHITE)Syncing dev dependencies...$R"; \
@@ -554,7 +555,7 @@ sync:
 			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/dev; \
 			$(INTERPRETER) -m pip check; \
 		else \
-			echo "$P $(BD)$(RED)No lockfile found at$R $(BD)$(IT)$(BLUE)$(BASEDIR)/dev$R$(BD)$(RED)! Aborting!$R"; \
+			echo "$P $(BD)$(BLINK)$(RED)No lockfile found at$R $(BD)$(BLINK)$(IT)$(BLUE)$(BASEDIR)/dev$R$(BD)$(BLINK)$(RED)! Aborting!$R"; \
 		fi; \
 	elif [ "$(PYLLOCK_ENV)" = "testing" ] || [ "$(PYLLOCK_ENV)" = "test" ]; then \
 		echo "$P $(BD)$(WHITE)Syncing test dependencies...$R"; \
@@ -562,7 +563,7 @@ sync:
 			$(INTERPRETER) -m piptools sync --pip-args "-e ." $(PYLLOCK_LOCK_DIR)/test; \
 			$(INTERPRETER) -m pip check; \
 		else \
-			echo "$P $(BD)$(RED)No lockfile found at$R $(BD)$(IT)$(BLUE)$(BASEDIR)/test$R$(BD)$(RED)! Aborting!$R"; \
+			echo "$P $(BD)$(BLINK)$(RED)No lockfile found at$R $(BD)$(BLINK)$(IT)$(BLUE)$(BASEDIR)/test$R$(BD)$(BLINK)$(RED)! Aborting!$R"; \
 		fi; \
 	else \
 		echo "$P $(BD)$(RED)Bad value for$R $(IT)$(ORANGE)PYLLOCK_ENV$R: $(PYLLOCK_ENV)"; \
