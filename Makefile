@@ -191,7 +191,7 @@ BD_UL_IT_WHITE   := $(if $(NO_COLOR_ENABLED),,\033[1;3;4;37m)
 
 # Reset Macro
 # Resets terminal typeface back to default.
-R := $(if $(NO_COLOR_ENABLED),,\033[0m)
+R := $(if $(NO_COLOR_ENABLED),,$(shell tput sgr0 2>/dev/null))
 
 # Prefix Macro
 # When creating a macro , even if it'll be passed to 'echo' later, you _should_ add quotes.
